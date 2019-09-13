@@ -1,3 +1,5 @@
+<!-- USE MOVE_ROBOT VARIABLE TO SELECT WHICH ROBOT TO CONTROL, DEFAULT=1 -->
 <launch>
-  <node pkg="ca_tools" type="key_teleop.py" name="keyboard_teleop" output="screen"/>
+  <arg name="nr" default="$(optenv MOVE_ROBOT 1)"/>
+   <node pkg="ca_tools" type="key_teleop.py" name="keyboard_teleop" output="screen" ns="$(eval 'create' + str(arg('nr')))" if="$(eval arg('nr') > 0)" />
 </launch>

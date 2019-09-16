@@ -1,5 +1,5 @@
 <launch>
-	<arg name="env" default="empty"/>
+	<arg name="env" default="playground"/>
 
   	<arg name="paused" value="$(optenv PAUSED false)"/>
 	<arg name="gui" value="$(optenv GUI true)"/>

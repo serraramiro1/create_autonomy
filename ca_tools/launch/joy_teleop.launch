@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
+<!-- USE MOVE_ROBOT VARIABLE TO SELECT WHICH ROBOT TO CONTROL, DEFAULT=1 -->
 <launch>
   <arg name="joy_dev" default="/dev/input/js0" />
   <arg name="joy_config" default="xbox360" />
   <arg name="teleop_config" default="$(find ca_tools)/config/$(arg joy_config).yaml" />
+  <arg name="nr" default="$(optenv MOVE_ROBOT 1)"/>
 
   <rosparam file="$(arg teleop_config)" command="load" />
 
@@ -12,5 +14,5 @@
     <param name="autorepeat_rate" value="20" />
   </node>
 
-  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop"/>
+  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop" ns="$(eval 'create' + str(arg('nr')))" if="$(eval arg('nr') > 0)"/>
 </launch>

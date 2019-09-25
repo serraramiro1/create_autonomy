@@ -3,7 +3,7 @@
   <arg name="joy_dev" default="/dev/input/js0" />
   <arg name="joy_config" default="xbox360" />
   <arg name="teleop_config" default="$(find ca_tools)/config/$(arg joy_config).yaml" />
-  <arg name="id" default="$(optenv id 1)"/>
+  <arg name="id" default="$(optenv ID 1)"/>
 
   <rosparam file="$(arg teleop_config)" command="load" />
 

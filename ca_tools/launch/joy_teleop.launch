@@ -13,5 +13,5 @@
     <param name="autorepeat_rate" value="20" />
   </node>
 
-  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop" ns="$(eval 'create' + str(arg('nr')))" if="$(eval str(arg('id')).isdigit() and (arg('id') > 0))"/>
+  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop" ns="$(eval 'create' + str(arg('id')))" if="$(eval str(arg('id')).isdigit() and (arg('id') > 0))"/>
 </launch>

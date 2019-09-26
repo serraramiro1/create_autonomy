@@ -10,6 +10,8 @@
 import curses
 import math
 from enum import Enum
+import signal
+import sys
 
 import rospy
 from geometry_msgs.msg import Twist
@@ -22,6 +24,20 @@ TURNING=1
 STOP_TURNING=2
 FORWARD=3
 STOP_FORWARD=4
+
+def signal_handler(signal, frame,queue_size=1):
+  # your code here
+    pubtopic = "/create1/cmd_vel"
+    pub = rospy.Publisher(pubtopic, Twist,queue_size=1)
+    aux = Twist()
+    aux.angular.x=0.0
+    aux.angular.y=0.0
+    aux.angular.z=0.0
+    aux.linear.x=0.0
+    aux.linear.y=0.0
+    aux.linear.z=0.0
+    pub.publish(aux)
+    sys.exit(0)
 
 class ctrl_Node:
     
@@ -89,11 +105,17 @@ class ctrl_Node:
             
         else:
             aux = Twist()
+            if (abs(self.my_angleGoal-self.my_pose.theta)>6.0):
+                negateFlag=-1.0
+            else:
+                negateFlag=1.0
+
             if (self.my_angleGoal-self.my_pose.theta)<0:
-                aux.angular.z=-1.0
+                aux.angular.z=negateFlag*-1.0
             else:    
                 aux.angular.z=1.0
 
+            rospy.loginfo("negateFlag is %f",negateFlag)
             aux.angular.x=0.0
             aux.angular.y=0.0
             self.my_pub.publish(aux)
@@ -102,10 +124,6 @@ class ctrl_Node:
         self.stop()
         self.moveForward()
         self.state=FORWARD
-
-
-
-
 
     def stop(self):
             aux = Twist()
@@ -146,13 +164,12 @@ class ctrl_Node:
          self.setGoalAngle()
          self.state=TURNING
 
-
     def setGoalAngle(self):
         self.my_angleGoal=math.atan2((self.my_goals[self.goal_num].y-self.my_pose.y),self.my_goals[self.goal_num].x-self.my_pose.x)
         rospy.loginfo("Difference between angles is %f,",(self.my_angleGoal-self.my_pose.theta))
     
     def reachedAngle(self):
-        return ((abs(self.my_angleGoal-self.my_pose.theta))<0.2)
+        return ((abs(self.my_angleGoal-self.my_pose.theta))<0.2 or (abs(self.my_angleGoal-self.my_pose.theta))>6.04)
 
     def reachedPosition(self):
         reached_y = ((abs(self.my_goals[self.goal_num].y-self.my_pose.y))<0.2)
@@ -162,4 +179,7 @@ class ctrl_Node:
 
 if __name__ == '__main__':
     node=ctrl_Node()
+    signal.signal(signal.SIGINT, signal_handler)
     rospy.spin()
+    node.stop()
+    

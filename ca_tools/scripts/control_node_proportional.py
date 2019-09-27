@@ -139,7 +139,7 @@ class ctrl_Node:
         aux = Twist()
         aux.angular.x=0.0
         aux.angular.y=0.0
-        aux.angular.z=0.0
+        aux.angular.z=(self.diffAngle())*5.0
         aux.linear.x=0.2
         aux.linear.y=0.0
         aux.linear.z=0.0
@@ -153,12 +153,20 @@ class ctrl_Node:
             self.goal_num%=4
         else:
             self.setGoalAngle()
-            if (not self.reachedAngle()):
+            if (self.angleIsBig()):
                 self.state=STOP_FORWARD
                 self.stop()
             else:
                 self.moveForward()
-    
+
+    def diffAngle(self):
+        return (self.my_angleGoal-self.my_pose.theta)
+
+    def angleIsBig(self):
+        return ((self.my_angleGoal-self.my_pose.theta)>1) and ((self.my_angleGoal-self.my_pose.theta)<5.28)
+
+
+
     def stop_forward(self):
          self.stop()
          self.setGoalAngle()

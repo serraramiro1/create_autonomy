@@ -10,6 +10,7 @@
 import math
 import signal
 import sys
+from math import pi
 
 import rospy
 from geometry_msgs.msg import Twist
@@ -98,7 +99,7 @@ class ctrl_Node:
             
         else:
             aux = Twist()
-            if (abs(self._my_angleGoal-self._my_pose.theta)>3.14):
+            if (abs(self._my_angleGoal-self._my_pose.theta)>pi):
                 negateFlag=-1.0
             else:
                 negateFlag=1.0
@@ -144,7 +145,7 @@ class ctrl_Node:
         return (self._my_angleGoal-self._my_pose.theta)
 
     def _angleIsBig(self):
-        return ((self._my_angleGoal-self._my_pose.theta)>1) and ((self._my_angleGoal-self._my_pose.theta)<5.28)
+        return ((self._my_angleGoal-self._my_pose.theta)>1) and ((self._my_angleGoal-self._my_pose.theta)<(2*pi-1.0))
 
 
 
@@ -158,7 +159,7 @@ class ctrl_Node:
         rospy.loginfo("Difference between angles is %f,",(self._my_angleGoal-self._my_pose.theta))
     
     def _reachedAngle(self):
-        return ((abs(self._my_angleGoal-self._my_pose.theta))<0.2 or (abs(self._my_angleGoal-self._my_pose.theta))>6.04)
+        return ((abs(self._my_angleGoal-self._my_pose.theta))<0.2 or (abs(self._my_angleGoal-self._my_pose.theta))>(2*pi-1))
 
     def _reachedPosition(self):
         reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<0.2)

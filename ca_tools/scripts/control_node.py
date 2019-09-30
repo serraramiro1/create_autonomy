@@ -5,11 +5,9 @@
 # Released under the BSD License.
 #
 # Authors:
-#   * Siegfried-A. Gevatter
+#   * Ramiro Serra
 
-import curses
 import math
-from enum import Enum
 import signal
 import sys
 
@@ -18,24 +16,21 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose2D
 from geometry_msgs.msg import Point
 from nav_msgs.msg import Odometry
-import tf
+from tf.transformations import euler_from_quaternion
 
 TURNING=1
 STOP_TURNING=2
 FORWARD=3
 STOP_FORWARD=4
 
+pubtopic = "/create1/cmd_vel"
+subtopic = "/create1/gts"
+
 def signal_handler(signal, frame,queue_size=1):
-  # your code here
+  # This will execute when Ctrl-c is pressed
     pubtopic = "/create1/cmd_vel"
     pub = rospy.Publisher(pubtopic, Twist,queue_size=1)
     aux = Twist()
-    aux.angular.x=0.0
-    aux.angular.y=0.0
-    aux.angular.z=0.0
-    aux.linear.x=0.0
-    aux.linear.y=0.0
-    aux.linear.z=0.0
     pub.publish(aux)
     sys.exit(0)
 
@@ -44,142 +39,133 @@ class ctrl_Node:
     def __init__(self):
         
         rospy.init_node('control_node')
-        pubtopic = "/create1/cmd_vel"
-        self.my_pub = rospy.Publisher(pubtopic, Twist, queue_size=10)
-        subtopic = "/create1/gts"
+    
+        self._my_pub = rospy.Publisher(pubtopic, Twist, queue_size=10)
+
         # Create a subscriber with appropriate topic, custom message and name of callback function.
-        self.my_sub=rospy.Subscriber(subtopic,Odometry,self._callback)
-        self.my_goals = []
+        self._my_sub=rospy.Subscriber(subtopic,Odometry,self._callback)
+        self._my_goals = []
         
         for i in range(4):
-            self.my_goals.append(Pose2D())
+            self._my_goals.append(Pose2D())
 
 
-        self.my_goals[0].x=0.0
-        self.my_goals[0].y=0.0
+        self._my_goals[0].x=0.0
+        self._my_goals[0].y=0.0
 
-        self.my_goals[1].x=2.0
-        self.my_goals[1].y=0.0
+        self._my_goals[1].x=2.0
+        self._my_goals[1].y=0.0
 
-        self.my_goals[2].x=2.0
-        self.my_goals[2].y=2.0
+        self._my_goals[2].x=2.0
+        self._my_goals[2].y=2.0
 
-        self.my_goals[3].x=0.0
-        self.my_goals[3].y=2.0
+        self._my_goals[3].x=0.0
+        self._my_goals[3].y=2.0
         
-        self.goal_num=0
-        self.state=STOP_FORWARD
-        self.my_pose=Pose2D()
-        self.my_pose.x="unset"
-        self.my_pose.y="unset"
+        self._goal_num=0
+        self._state=STOP_FORWARD
+        self._my_pose=Pose2D()
+        self._my_pose.x="unset"
+        self._my_pose.y="unset"
 
 # Create a callback function for the subscriber.
     def _callback(self,data):
-        self.my_pose.x = data.pose.pose.position.x
-        self.my_pose.y = data.pose.pose.position.y
-        q0 = data.pose.pose.orientation.w
-        q1 = data.pose.pose.orientation.x
-        q2 = data.pose.pose.orientation.y
-        q3 = data.pose.pose.orientation.z
-        yaw = math.atan2(2.0*(q0*q3 + q1*q2),(1.0-2.0*(q2*q2 + q3*q3)))
-        self.my_pose.theta = yaw
-        self.move()
-        #rospy.loginfo("My goal is %d, my state is %s",self.goal_num,self.state)
+        self._my_pose.x = data.pose.pose.position.x
+        self._my_pose.y = data.pose.pose.position.y
+        q = data.pose.pose.orientation
+        q_arr = [q.x, q.y, q.z, q.w]
+        euler = euler_from_quaternion(q_arr)
+        self._my_pose.theta=euler[2]
+        self._move()
+        #rospy.loginfo("My goal is %d, my _state is %s",self._goal_num,self._state)
 
-    def move(self):
-        if self.state==TURNING:
-            self.turning()
-        elif self.state==STOP_TURNING:
-            self.stop_turning()
-        elif self.state==FORWARD:
-            self.forward()
-        elif self.state==STOP_FORWARD:
-            self.stop_forward()
+    def _move(self):
+        if self._state==TURNING:
+            self._turning()
+        elif self._state==STOP_TURNING:
+            self._stop_Turning()
+        elif self._state==FORWARD:
+            self._forward()
+        elif self._state==STOP_FORWARD:
+            self._stop_Forward()
 
     
-    def turning(self):
+    def _turning(self):
 
-        if (self.reachedAngle()):
-            self.stop()
-            self.state=STOP_TURNING
+        if (self._reachedAngle()):
+            self._stop()
+            self._state=STOP_TURNING
             
         else:
             aux = Twist()
-            if (abs(self.my_angleGoal-self.my_pose.theta)>3.14):
+            if (abs(self._my_angleGoal-self._my_pose.theta)>3.14):
                 negateFlag=-1.0
             else:
                 negateFlag=1.0
 
-            if (self.my_angleGoal-self.my_pose.theta)<0:
+            if (self._my_angleGoal-self._my_pose.theta)<0:
                 aux.angular.z=negateFlag*-1.0
             else:    
                 aux.angular.z=1.0
 
             rospy.loginfo("negateFlag is %f",negateFlag)
-            aux.angular.x=0.0
-            aux.angular.y=0.0
-            self.my_pub.publish(aux)
+            self._my_pub.publish(aux)
 
-    def stop_turning(self):
-        self.stop()
-        self.moveForward()
-        self.state=FORWARD
+    def _stop_Turning(self):
+        self._stop()
+        self._moveForward()
+        self._state=FORWARD
 
-    def stop(self):
+    def _stop(self):
             aux = Twist()
-            aux.angular.x=0.0
-            aux.angular.y=0.0
-            aux.angular.z=0.0
-            aux.linear.x=0.0
-            aux.linear.y=0.0
-            aux.linear.z=0.0
-            self.my_pub.publish(aux)
+            self._my_pub.publish(aux)
     
-    def moveForward(self):
+    def _moveForward(self):
         aux = Twist()
-        aux.angular.x=0.0
-        aux.angular.y=0.0
-        aux.angular.z=0.0
         aux.linear.x=0.2
-        aux.linear.y=0.0
-        aux.linear.z=0.0
-        self.my_pub.publish(aux)
+        self._my_pub.publish(aux)
 
-    def forward(self):
-        if (self.reachedPosition()):
-            self.stop()
-            self.state=STOP_FORWARD
-            self.goal_num+=1
-            self.goal_num%=4
+    def _forward(self):
+        if (self._reachedPosition()):
+            self._stop()
+            self._state=STOP_FORWARD
+            self._goal_num+=1
+            self._goal_num%=4
         else:
-            self.setGoalAngle()
-            if (not self.reachedAngle()):
-                self.state=STOP_FORWARD
-                self.stop()
+            self._setGoalAngle()
+            if (not self._reachedAngle()):
+                self._state=STOP_FORWARD
+                self._stop()
             else:
-                self.moveForward()
-    
-    def stop_forward(self):
-         self.stop()
-         self.setGoalAngle()
-         self.state=TURNING
+                self._moveForward()
 
-    def setGoalAngle(self):
-        self.my_angleGoal=math.atan2((self.my_goals[self.goal_num].y-self.my_pose.y),self.my_goals[self.goal_num].x-self.my_pose.x)
-        rospy.loginfo("Difference between angles is %f,",(self.my_angleGoal-self.my_pose.theta))
-    
-    def reachedAngle(self):
-        return ((abs(self.my_angleGoal-self.my_pose.theta))<0.2 or (abs(self.my_angleGoal-self.my_pose.theta))>6.04)
+    def _diffAngle(self):
+        return (self._my_angleGoal-self._my_pose.theta)
 
-    def reachedPosition(self):
-        reached_y = ((abs(self.my_goals[self.goal_num].y-self.my_pose.y))<0.2)
-        reached_x=(abs(self.my_goals[self.goal_num].x-self.my_pose.x)<0.2)
+    def _angleIsBig(self):
+        return ((self._my_angleGoal-self._my_pose.theta)>1) and ((self._my_angleGoal-self._my_pose.theta)<5.28)
+
+
+
+    def _stop_Forward(self):
+         self._stop()
+         self._setGoalAngle()
+         self._state=TURNING
+
+    def _setGoalAngle(self):
+        self._my_angleGoal=math.atan2((self._my_goals[self._goal_num].y-self._my_pose.y),self._my_goals[self._goal_num].x-self._my_pose.x)
+        rospy.loginfo("Difference between angles is %f,",(self._my_angleGoal-self._my_pose.theta))
+    
+    def _reachedAngle(self):
+        return ((abs(self._my_angleGoal-self._my_pose.theta))<0.2 or (abs(self._my_angleGoal-self._my_pose.theta))>6.04)
+
+    def _reachedPosition(self):
+        reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<0.2)
+        reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<0.2)
         return (reached_x and reached_y)
 
 
 if __name__ == '__main__':
     node=ctrl_Node()
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler) ##associates signal with handler
     rospy.spin()
-    node.stop()
-    

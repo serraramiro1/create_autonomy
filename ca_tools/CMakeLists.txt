@@ -7,6 +7,8 @@ catkin_package(
   CATKIN_DEPENDS
     joy_teleop
     geometry_msgs
+    std_msgs
+    pid
     rospy
 )
 

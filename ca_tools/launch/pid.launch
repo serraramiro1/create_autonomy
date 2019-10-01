@@ -1,4 +1,5 @@
  <launch>
+    <include file="$(find ca_gazebo)/launch/create_empty_world.launch"/>
     <node name="controller" pkg="pid" type="controller" >
       <param name="Kp" value="5.0" />
       <param name="Ki" value="0.0" />

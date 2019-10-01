@@ -24,13 +24,16 @@ TURNING=1
 STOP_TURNING=2
 FORWARD=3
 STOP_FORWARD=4
-
+LINEAR_VEL=0.2
+DISTANCE_TOLERANCE=0.2
+ANGLE_TOLERANCE=0.2
+ANGULAR_VEL=1.0
 pubtopic = "/create1/cmd_vel"
 subtopic = "/create1/gts"
+BIG_ANGLE_THRESHOLD=1.0 #minimum angle in which the robot will stop and turn
 
 def signal_handler(signal, frame,queue_size=1):
   # This will execute when Ctrl-c is pressed
-    pubtopic = "/create1/cmd_vel"
     pub = rospy.Publisher(pubtopic, Twist,queue_size=1)
     aux = Twist()
     pub.publish(aux)
@@ -51,17 +54,12 @@ class ctrl_Node:
         for i in range(4):
             self._my_goals.append(Pose2D())
 
-
-        self._my_goals[0].x=0.0
-        self._my_goals[0].y=0.0
-
         self._my_goals[1].x=2.0
-        self._my_goals[1].y=0.0
+
 
         self._my_goals[2].x=2.0
         self._my_goals[2].y=2.0
 
-        self._my_goals[3].x=0.0
         self._my_goals[3].y=2.0
         
         self._goal_num=0
@@ -79,7 +77,6 @@ class ctrl_Node:
         euler = euler_from_quaternion(q_arr)
         self._my_pose.theta=euler[2]
         self._move()
-        #rospy.loginfo("My goal is %d, my _state is %s",self._goal_num,self._state)
 
     def _move(self):
         if self._state==TURNING:
@@ -91,7 +88,6 @@ class ctrl_Node:
         elif self._state==STOP_FORWARD:
             self._stop_Forward()
 
-    
     def _turning(self):
 
         if (self._reachedAngle()):
@@ -100,17 +96,17 @@ class ctrl_Node:
             
         else:
             aux = Twist()
-            if (abs(self._my_angleGoal-self._my_pose.theta)>pi):
-                negateFlag=-1.0
+            if (abs(self._my_anglegoal-self._my_pose.theta)>pi):
+                negateflag=-1.0
             else:
-                negateFlag=1.0
+                negateflag=1.0
 
-            if (self._my_angleGoal-self._my_pose.theta)<0:
-                aux.angular.z=negateFlag*-1.0
+            if (self._my_anglegoal-self._my_pose.theta)<0:
+                aux.angular.z=negateflag*-ANGULAR_VEL
             else:    
-                aux.angular.z=1.0
+                aux.angular.z=ANGULAR_VEL
 
-            rospy.loginfo("negateFlag is %f",negateFlag)
+            rospy.loginfo("negateflag is %f",negateflag)
             self._my_pub.publish(aux)
 
     def _stop_Turning(self):
@@ -124,7 +120,7 @@ class ctrl_Node:
     
     def _moveForward(self):
         aux = Twist()
-        aux.linear.x=0.2
+        aux.linear.x=LINEAR_VEL
         self._my_pub.publish(aux)
 
     def _forward(self):
@@ -142,10 +138,10 @@ class ctrl_Node:
                 self._moveForward()
 
     def _diffAngle(self):
-        return (self._my_angleGoal-self._my_pose.theta)
+        return (self._my_anglegoal-self._my_pose.theta)
 
     def _angleIsBig(self):
-        return ((self._my_angleGoal-self._my_pose.theta)>1.0) and ((self._my_angleGoal-self._my_pose.theta)<((2*pi)-1.0))
+        return ((self._my_anglegoal-self._my_pose.theta)>BIG_ANGLE_THRESHOLD) and ((self._my_anglegoal-self._my_pose.theta)<((2*pi)-BIG_ANGLE_THRESHOLD))
 
 
 
@@ -155,15 +151,15 @@ class ctrl_Node:
          self._state=TURNING
 
     def _setGoalAngle(self):
-        self._my_angleGoal=math.atan2((self._my_goals[self._goal_num].y-self._my_pose.y),self._my_goals[self._goal_num].x-self._my_pose.x)
-        rospy.loginfo("Difference between angles is %f,",(self._my_angleGoal-self._my_pose.theta))
+        self._my_anglegoal=math.atan2((self._my_goals[self._goal_num].y-self._my_pose.y),self._my_goals[self._goal_num].x-self._my_pose.x)
+        rospy.loginfo("Difference between angles is %f,",(self._my_anglegoal-self._my_pose.theta))
     
     def _reachedAngle(self):
-        return ((abs(self._my_angleGoal-self._my_pose.theta))<0.2 or (abs(self._my_angleGoal-self._my_pose.theta))>(2*pi-0.2))
+        return ((abs(self._my_anglegoal-self._my_pose.theta))<ANGLE_TOLERANCE or (abs(self._my_anglegoal-self._my_pose.theta))>(2*pi-ANGLE_TOLERANCE))
 
     def _reachedPosition(self):
-        reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<0.2)
-        reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<0.2)
+        reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<DISTANCE_TOLERANCE)
+        reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<DISTANCE_TOLERANCE)
         return (reached_x and reached_y)
 
 

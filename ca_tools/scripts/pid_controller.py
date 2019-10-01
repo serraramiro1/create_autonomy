@@ -20,11 +20,10 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import Float64
 from tf.transformations import euler_from_quaternion
 
-
-TURNING=1
-STOP_TURNING=2
+PID_EFFORT_ADJUST=5.0 ## factor that divides the effort to send the cmd_vel command
 FORWARD=3
 STOP_FORWARD=4
+DISTANCE_TOLERANCE=0.2
 
 pubtopic = "/create1/cmd_vel"
 subtopic = "/create1/gts"
@@ -59,16 +58,12 @@ class ctrl_Node:
             self._my_goals.append(Pose2D())
 
         self._my_pid_effort=0.0
-        self._my_goals[0].x=0.0
-        self._my_goals[0].y=0.0
 
         self._my_goals[1].x=2.0
-        self._my_goals[1].y=0.0
 
         self._my_goals[2].x=2.0
         self._my_goals[2].y=2.0
 
-        self._my_goals[3].x=0.0
         self._my_goals[3].y=2.0
         
         self._goal_num=0
@@ -94,8 +89,6 @@ class ctrl_Node:
         euler = euler_from_quaternion(q_arr)
         self._my_pose.theta=euler[2]
         self._my_pid_state=self._diffAngle()
-        #if (self._diffAngle()<(-pi)):
-         #   self._my_pid_state+=pi
         self._my_pid_setpoint.data=0.0
         self._my_pid_setpoint_pub.publish(self._my_pid_setpoint)
         self._my_pid_state_pub.publish(self._my_pid_state)
@@ -113,7 +106,7 @@ class ctrl_Node:
 
     def _forward(self):
         aux=Twist()
-        aux.angular.z=-self._my_pid_effort/5.0
+        aux.angular.z=-self._my_pid_effort/PID_EFFORT_ADJUST
         aux.linear.x=0.2
         self._my_pub.publish(aux)
         if self._reachedPosition():
@@ -144,8 +137,8 @@ class ctrl_Node:
         rospy.loginfo("Difference between angles is %f,",(self._my_angleGoal-self._my_pose.theta))
 
     def _reachedPosition(self):
-        reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<0.2)
-        reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<0.2)
+        reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<DISTANCE_TOLERANCE)
+        reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<DISTANCE_TOLERANCE)
         return (reached_x and reached_y)
 
 

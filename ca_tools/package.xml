@@ -16,6 +16,8 @@
 
   <depend>geometry_msgs</depend>
   <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>pid</depend>
 
   <exec_depend>joy</exec_depend>
   <exec_depend>joy_teleop</exec_depend>

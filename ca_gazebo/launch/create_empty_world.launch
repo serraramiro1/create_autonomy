@@ -4,6 +4,13 @@
   	<arg name="paused" value="$(optenv PAUSED false)"/>
 	<arg name="gui" value="$(optenv GUI true)"/>
 	<arg name="debug" value="$(optenv DEBUG false)"/>
+	<param name="create1/amcl/initial_pose_x" value="-3"/>
+	<param name="create1/amcl/initial_pose_y" value="4"/>
+	<param name="create1/amcl/initial_pose_a" value="0"/>
+
+	<param name="create2/amcl/initial_pose_x" value="5"/>
+	<param name="create2/amcl/initial_pose_y" value="1"/>
+	<param name="create2/amcl/initial_pose_a" value="1.5708"/>
 
 	<!-- Launch Gazebo world -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">

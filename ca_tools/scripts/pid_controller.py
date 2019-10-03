@@ -11,11 +11,12 @@ import math
 import signal
 import sys
 from math import pi
-
 import rospy
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose2D
+from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Point
+from nav_msgs.msg import Path
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float64
 from tf.transformations import euler_from_quaternion
@@ -47,13 +48,15 @@ class ctrl_Node:
         # Create a subscriber with appropriate topic, custom message and name of callback function.
         self._my_sub=rospy.Subscriber(subtopic,Odometry,self._callback)
         self._my_pid_effort_sub=rospy.Subscriber("/control_effort",Float64,self._effortCallback)
+        self._my_path_publisher= rospy.Publisher("/create1/my_path", Path, queue_size=10)
+        self._my_path=Path()
         
         self._my_pid_setpoint_pub=rospy.Publisher("/setpoint",Float64,queue_size=1)
         self._my_pid_setpoint=Float64()
         self._my_pid_setpoint.data=0.0
         self._my_pid_setpoint_pub.publish(self._my_pid_setpoint)
         self._my_goals = []
-        
+        self._path_threshold=60
         for i in range(4):
             self._my_goals.append(Pose2D())
 
@@ -85,6 +88,15 @@ class ctrl_Node:
         self._my_pose.x = data.pose.pose.position.x
         self._my_pose.y = data.pose.pose.position.y
         q = data.pose.pose.orientation
+        self._path_threshold-=1
+        if (self._path_threshold==0):
+            aux = PoseStamped()
+            aux.pose=data.pose.pose
+            aux.header.frame_id="/map"
+            self._my_path.header.frame_id="/map"
+            self._my_path.poses.append(aux)
+            self._my_path_publisher.publish(self._my_path)
+            self._path_threshold=60
         q_arr = [q.x, q.y, q.z, q.w]
         euler = euler_from_quaternion(q_arr)
         self._my_pose.theta=euler[2]
@@ -93,8 +105,6 @@ class ctrl_Node:
         self._my_pid_setpoint_pub.publish(self._my_pid_setpoint)
         self._my_pid_state_pub.publish(self._my_pid_state)
         self._move()
-        rospy.loginfo("My angle is: %f",self._my_pose.theta)
-        rospy.loginfo("My goal angle is %f",self._my_angleGoal)  
 
     def _move(self):
 
@@ -119,11 +129,6 @@ class ctrl_Node:
             auxangle+=(2*pi)
         elif auxangle > pi:
             auxangle-=(2*pi)
-
-        #if auxangle < pi:
-        #    auxangle+=(2*pi)
-        #elif auxangle > pi:
-        #    auxangle-=(2*pi)
         return auxangle
     def _stop_Forward(self):
          self._goal_num+=1
@@ -133,14 +138,12 @@ class ctrl_Node:
 
     def _setGoalAngle(self):
         self._my_angleGoal=(math.atan2((self._my_goals[self._goal_num].y-self._my_pose.y),self._my_goals[self._goal_num].x-self._my_pose.x))
-        
-        rospy.loginfo("Difference between angles is %f,",(self._my_angleGoal-self._my_pose.theta))
+
 
     def _reachedPosition(self):
         reached_y = ((abs(self._my_goals[self._goal_num].y-self._my_pose.y))<DISTANCE_TOLERANCE)
         reached_x=(abs(self._my_goals[self._goal_num].x-self._my_pose.x)<DISTANCE_TOLERANCE)
         return (reached_x and reached_y)
-
 
 if __name__ == '__main__':
     node=ctrl_Node()

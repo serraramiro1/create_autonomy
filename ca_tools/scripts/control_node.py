@@ -115,7 +115,7 @@ class Ctrl_Node:
         self._move_forward()
         self._state = FORWARD
 
-    def _stop(self):
+    def _stop(self):.
         aux = Twist()
         self._my_pub.publish(aux)
 

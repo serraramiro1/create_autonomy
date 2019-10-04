@@ -197,7 +197,7 @@ class Ctrl_Node:
         else:
             aux = Twist()
             aux.angular.z = -self._my_pid_angular_effort/PID_ANGULAR_EFFORT_ADJUST
-        self._my_pub.publish(aux)
+            self._my_pub.publish(aux)
 
     def _set_goal_angle(self):
         """Sets angle goal basing on the actual position and goal position

@@ -37,7 +37,7 @@ GTS_SUB_TOPIC = "/create1/gts"
 
 class STATES(Enum):
     FORWARD=1
-    STOP_FORWARD=2
+    STOP_MOVING_FORWARD=2
     TURNING=3
     STOP_TURNING=4
 
@@ -85,7 +85,7 @@ class CtrlNode:
 
         self._lineal_state = None
         self._goal_num = 0
-        self._state = STATES.STOP_FORWARD
+        self._state = STATES.STOP_MOVING_FORWARD
         self._my_pose = Pose2D()
         self._my_pid_state = 0.0
         self._my_angle_goal = None
@@ -146,8 +146,8 @@ class CtrlNode:
             if self._state == STATES.FORWARD:
                 self._forward()
                 return
-            if self._state == STATES.STOP_FORWARD:
-                self._stop_forward()
+            if self._state == STATES.STOP_MOVING_FORWARD:
+                self._stop_moving_forward()
                 return
 
     def _forward(self):
@@ -156,7 +156,7 @@ class CtrlNode:
         if self._reached_position():
             rospy.loginfo("Reached position")
             self._stop()
-            self._state = STATES.STOP_FORWARD
+            self._state = STATES.STOP_MOVING_FORWARD
             return
         aux = Twist()
         aux.angular.z = -self._my_pid_angular_effort/PID_ANGULAR_EFFORT_ADJUST
@@ -184,7 +184,7 @@ class CtrlNode:
                 auxangle -= (2*pi)
         return auxangle
 
-    def _stop_forward(self):
+    def _stop_moving_forward(self):
         """Sets new goal
         """
         self._stop()

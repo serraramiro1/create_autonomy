@@ -32,7 +32,7 @@ BIG_ANGLE_THRESHOLD = 1.0  # minimum angle in which the robot will stop and turn
 
 class STATES(Enum):
     FORWARD=1
-    STOP_FORWARD=2
+    STOP_MOVING_FORWARD=2
     TURNING=3
     STOP_TURNING=4
 
@@ -63,7 +63,7 @@ class CtrlNode:
         self._my_goals[3] = Pose2D(2, 0, 0)
 
         self._goal_num = 0
-        self.states = STATES.STOP_FORWARD
+        self.states = STATES.STOP_MOVING_FORWARD
         self._my_pose = Pose2D()
         self._my_pose.x = None
         self._my_pose.y = None
@@ -95,8 +95,8 @@ class CtrlNode:
             if self.states == STATES.FORWARD:
                 self._forward()
                 return
-            if self.states == STATES.STOP_FORWARD:
-                self._stop_forward()
+            if self.states == STATES.STOP_MOVING_FORWARD:
+                self._stop_moving_forward()
                 return
 
     def _turning(self):
@@ -132,13 +132,13 @@ class CtrlNode:
     def _forward(self):
         if (self._reached_position()):
             self._stop()
-            self.states = STATES.STOP_FORWARD
+            self.states = STATES.STOP_MOVING_FORWARD
             self._goal_num += 1
             self._goal_num %= 4
         else:
             self._set_goal_angle()
             if (not self._reached_angle()):
-                self.states = STATES.STOP_FORWARD
+                self.states = STATES.STOP_MOVING_FORWARD
                 self._stop()
             else:
                 self._move_forward()
@@ -166,7 +166,7 @@ class CtrlNode:
         """
         return (abs(self._diff_angle()) > BIG_ANGLE_THRESHOLD)
 
-    def _stop_forward(self):
+    def _stop_moving_forward(self):
         self._stop()
         self._set_goal_angle()
         self.states = STATES.TURNING

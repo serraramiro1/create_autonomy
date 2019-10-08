@@ -11,6 +11,7 @@ import math
 import signal
 import sys
 from math import pi
+from enum import Enum
 
 import rospy
 from geometry_msgs.msg import Twist, Pose2D, Point
@@ -18,10 +19,8 @@ from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 
 
-TURNING = 1
-STOP_TURNING = 2
-FORWARD = 3
-STOP_FORWARD = 4
+
+
 LINEAR_VEL = 0.2
 DISTANCE_TOLERANCE = 0.2
 ANGLE_TOLERANCE = 0.2
@@ -29,6 +28,13 @@ ANGULAR_VEL = 1.0
 VEL_PUB_TOPIC = "/create1/cmd_vel"
 GTS_SUBTOPIC = "/create1/gts"
 BIG_ANGLE_THRESHOLD = 1.0  # minimum angle in which the robot will stop and turn
+
+
+class STATES(Enum):
+    FORWARD=1
+    STOP_FORWARD=2
+    TURNING=3
+    STOP_TURNING=4
 
 
 def signal_handler(signal, frame, queue_size=1):
@@ -44,9 +50,8 @@ class CtrlNode:
     def __init__(self):
 
         rospy.init_node('control_node')
-
+        
         self._my_pub = rospy.Publisher(VEL_PUB_TOPIC, Twist, queue_size=10)
-
         # Create a subscriber with appropriate topic, custom message and name of callback function.
         self._my_sub = rospy.Subscriber(
             GTS_SUBTOPIC, Odometry, self._gts_callback)
@@ -56,7 +61,7 @@ class CtrlNode:
         self._my_goals[3] = Pose2D(2, 0, 0)
 
         self._goal_num = 0
-        self._state = STOP_FORWARD
+        self.states = STATES.STOP_FORWARD
         self._my_pose = Pose2D()
         self._my_pose.x = None
         self._my_pose.y = None
@@ -72,16 +77,16 @@ class CtrlNode:
 
     def _move(self):
         if not (self._my_pose.x == None or self._my_pose.y == None):
-            if self._state == TURNING:
+            if self.states == STATES.TURNING:
                 self._turning()
                 return
-            if self._state == STOP_TURNING:
+            if self.states == STATES.STOP_TURNING:
                 self._stop_turning()
                 return
-            if self._state == FORWARD:
+            if self.states == STATES.FORWARD:
                 self._forward()
                 return
-            if self._state == STOP_FORWARD:
+            if self.states == STATES.STOP_FORWARD:
                 self._stop_forward()
                 return
 
@@ -89,7 +94,7 @@ class CtrlNode:
 
         if (self._reached_angle()):
             self._stop()
-            self._state = STOP_TURNING
+            self.states = STATES.STOP_TURNING
 
         else:
             aux = Twist()
@@ -108,7 +113,7 @@ class CtrlNode:
     def _stop_turning(self):
         self._stop()
         self._move_forward()
-        self._state = FORWARD
+        self.states = STATES.FORWARD
 
     def _stop(self):
         aux = Twist()
@@ -122,13 +127,13 @@ class CtrlNode:
     def _forward(self):
         if (self._reached_position()):
             self._stop()
-            self._state = STOP_FORWARD
+            self.states = STATES.STOP_FORWARD
             self._goal_num += 1
             self._goal_num %= 4
         else:
             self._set_goal_angle()
             if (not self._reached_angle()):
-                self._state = STOP_FORWARD
+                self.states = STATES.STOP_FORWARD
                 self._stop()
             else:
                 self._move_forward()
@@ -154,7 +159,7 @@ class CtrlNode:
     def _stop_forward(self):
         self._stop()
         self._set_goal_angle()
-        self._state = TURNING
+        self.states = STATES.TURNING
 
     def _set_goal_angle(self):
         self._my_angle_goal = math.atan2(

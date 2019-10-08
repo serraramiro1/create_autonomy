@@ -12,6 +12,8 @@ import signal
 import sys
 from math import pi
 import rospy
+from enum import Enum
+
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose2D
 from geometry_msgs.msg import PoseStamped
@@ -22,12 +24,10 @@ from std_msgs.msg import Float64
 from tf.transformations import euler_from_quaternion
 
 ANGLE_TOLERANCE = 0.08
-ANGULAR_VEL = 1.0
+
 # factor that divides the effort to send the cmd_vel command
 PID_ANGULAR_EFFORT_ADJUST = 10.0
-TURNING = 2
-FORWARD = 3
-STOP_FORWARD = 4
+
 DISTANCE_TOLERANCE = 0.1
 PID_LINEAL_EFFORT_ADJUST = 10.0
 PATH_THRESHOLD = 60
@@ -35,6 +35,11 @@ PATH_THRESHOLD = 60
 VEL_PUB_TOPIC = "/create1/cmd_vel"
 GTS_SUB_TOPIC = "/create1/gts"
 
+class STATES(Enum):
+    FORWARD=1
+    STOP_FORWARD=2
+    TURNING=3
+    STOP_TURNING=4
 
 def signal_handler(signal, frame, queue_size=1):
   # This will execute when Ctrl-c is pressed
@@ -80,7 +85,7 @@ class CtrlNode:
 
         self._lineal_state = None
         self._goal_num = 0
-        self._state = STOP_FORWARD
+        self._state = STATES.STOP_FORWARD
         self._my_pose = Pose2D()
         self._my_pid_state = 0.0
         self._my_angle_goal = None
@@ -135,13 +140,13 @@ class CtrlNode:
             self._my_pid_lineal_state_pub.publish(self._diff_distance())
             self._my_pid_angular_state_pub.publish(self._diff_angle())
 
-            if self._state == TURNING:
+            if self._state == STATES.TURNING:
                 self._turning()
                 return
-            if self._state == FORWARD:
+            if self._state == STATES.FORWARD:
                 self._forward()
                 return
-            if self._state == STOP_FORWARD:
+            if self._state == STATES.STOP_FORWARD:
                 self._stop_forward()
                 return
 
@@ -151,7 +156,7 @@ class CtrlNode:
         if self._reached_position():
             rospy.loginfo("Reached position")
             self._stop()
-            self._state = STOP_FORWARD
+            self._state = STATES.STOP_FORWARD
             return
         aux = Twist()
         aux.angular.z = -self._my_pid_angular_effort/PID_ANGULAR_EFFORT_ADJUST
@@ -186,7 +191,7 @@ class CtrlNode:
         self._goal_num += 1
         self._goal_num %= 4
         self._set_goal_angle()
-        self._state = TURNING
+        self._state = STATES.TURNING
 
     def _turning(self):
         """Turns while standing still
@@ -195,7 +200,7 @@ class CtrlNode:
         if (self._reached_angle()):
             rospy.loginfo("Reached angle!")
             self._stop()
-            self._state = FORWARD
+            self._state = STATES.FORWARD
 
         else:
             aux = Twist()

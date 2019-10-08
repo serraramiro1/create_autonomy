@@ -48,6 +48,8 @@ def signal_handler(signal, frame, queue_size=1):
 class CtrlNode:
 
     def __init__(self):
+        """Initializations
+        """
 
         rospy.init_node('control_node')
         
@@ -68,6 +70,11 @@ class CtrlNode:
         self._my_angle_goal = 0.0
 
     def _gts_callback(self, data):
+        """Callback to groundtrouth
+        
+        Arguments:
+            data {[Odometry msg]} -- [Odometry by gts]
+        """
         self._my_pose.x = data.pose.pose.position.x
         self._my_pose.y = data.pose.pose.position.y
         q = data.pose.pose.orientation
@@ -76,6 +83,8 @@ class CtrlNode:
         self._my_pose.theta = euler[2]
 
     def _move(self):
+        """State machine
+        """
         if not (self._my_pose.x == None or self._my_pose.y == None):
             if self.states == STATES.TURNING:
                 self._turning()
@@ -98,7 +107,7 @@ class CtrlNode:
 
         else:
             aux = Twist()
-            
+
             if (self._diff_angle()) < 0:
                 aux.angular.z = -ANGULAR_VEL
             else:
@@ -150,6 +159,11 @@ class CtrlNode:
         return auxangle
 
     def _angle_is_big(self):
+        """Return if the angle difference between robot and goal is greater than a threshold
+        
+        Returns:
+            [boolean] -- [description]
+        """
         return (abs(self._diff_angle()) > BIG_ANGLE_THRESHOLD)
 
     def _stop_forward(self):
@@ -158,18 +172,26 @@ class CtrlNode:
         self.states = STATES.TURNING
 
     def _set_goal_angle(self):
+        """Sets the goal angle with the current position and the goal position
+        """
         self._my_angle_goal = math.atan2(
             (self._my_goals[self._goal_num].y-self._my_pose.y), self._my_goals[self._goal_num].x-self._my_pose.x)
 
     def _reached_angle(self):
+        """Returns true if reached angle
+        
+        Returns:
+            [bool] -- [description]
+        """
         return (abs(self._diff_angle()) < ANGLE_TOLERANCE)
 
     def _reached_position(self):
-        reached_y = (
-            (abs(self._my_goals[self._goal_num].y-self._my_pose.y)) < DISTANCE_TOLERANCE)
-        reached_x = (
-            abs(self._my_goals[self._goal_num].x-self._my_pose.x) < DISTANCE_TOLERANCE)
-        return (reached_x and reached_y)
+        """Returns true if reached position
+        
+        Returns:
+            [bool] -- [description]
+        """
+        return (abs(self._diff_distance()) < DISTANCE_TOLERANCE)
 
     def _reached_position(self):
         """Checks if robot is at the goal, with some tolerance

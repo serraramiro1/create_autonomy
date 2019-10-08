@@ -98,13 +98,9 @@ class CtrlNode:
 
         else:
             aux = Twist()
-            if (abs(self._my_angle_goal-self._my_pose.theta) > pi):
-                negateflag = -1.0
-            else:
-                negateflag = 1.0
-
-            if (self._my_angle_goal-self._my_pose.theta) < 0:
-                aux.angular.z = negateflag*-ANGULAR_VEL
+            
+            if (self._diff_angle()) < 0:
+                aux.angular.z = -ANGULAR_VEL
             else:
                 aux.angular.z = ANGULAR_VEL
 

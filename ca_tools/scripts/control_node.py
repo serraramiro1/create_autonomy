@@ -30,11 +30,7 @@ GTS_SUBTOPIC = "/create1/gts"
 BIG_ANGLE_THRESHOLD = 1.0  # minimum angle in which the robot will stop and turn
 
 
-class STATES(Enum):
-    FORWARD=1
-    STOP_MOVING_FORWARD=2
-    TURNING=3
-    STOP_TURNING=4
+class STATES(Enum): FORWARD=1;STOP_MOVING_FORWARD=2;TURNING=3;STOP_TURNING=4
 
 
 def signal_handler(signal, frame, queue_size=1):

@@ -113,8 +113,7 @@ class CtrlNode:
         q = data.pose.pose.orientation  # get orientation quaternion
         self._path_threshold -= 1
         q_arr = [q.x, q.y, q.z, q.w]
-        euler = euler_from_quaternion(q_arr)
-        self._my_pose.theta = euler[2]  # theta=yaw
+        (_,_,self._my_pose.theta) = euler_from_quaternion(q_arr)
         if (self._path_threshold == 0):  # add the pose to path every PATH_THRESHOLD cycles
             aux = PoseStamped()
             aux.pose = data.pose.pose
@@ -124,7 +123,7 @@ class CtrlNode:
             self._my_path_publisher.publish(self._my_path)
             self._path_threshold = PATH_THRESHOLD
 
-    def _move(self):
+    def move(self):
         if not (self._my_pose.x == None or self._my_pose.y == None):
             """State machine
             """
@@ -225,7 +224,7 @@ class CtrlNode:
         return (abs(self._diff_angle()) < ANGLE_TOLERANCE)
 
     def _diff_distance(self):
-        """Returns the distance beteween the robot and the goal
+        """Returns the distance between the robot and the goal
         """
         return(math.hypot(self._my_goals[self._goal_num].x-self._my_pose.x, self._my_goals[self._goal_num].y-self._my_pose.y))
 
@@ -236,4 +235,4 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     while not rospy.is_shutdown():
         rospy.sleep(0.3)
-        node._move()
+        node.move()

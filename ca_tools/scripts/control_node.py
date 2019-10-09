@@ -73,10 +73,9 @@ class CtrlNode:
         self._my_pose.y = data.pose.pose.position.y
         q = data.pose.pose.orientation
         q_arr = [q.x, q.y, q.z, q.w]
-        euler = euler_from_quaternion(q_arr)
-        self._my_pose.theta = euler[2]
+        (_,_,self._my_pose.theta) = euler_from_quaternion(q_arr)
 
-    def _move(self):
+    def move(self):
         """State machine
         """
         if not (self._my_pose.x == None or self._my_pose.y == None):
@@ -124,6 +123,7 @@ class CtrlNode:
         self._my_pub.publish(aux)
 
     def _forward(self):
+        
         if (self._reached_position()):
             self._stop()
             self.states = STATES.STOP_MOVING_FORWARD
@@ -189,7 +189,7 @@ class CtrlNode:
 
 
     def _diff_distance(self):
-        """Returns the distance beteween the robot and the goal
+        """Returns the distance between the robot and the goal
         """
         return(math.hypot(self._my_goals[self._goal_num].x-self._my_pose.x, self._my_goals[self._goal_num].y-self._my_pose.y))
 
@@ -200,4 +200,4 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     while not rospy.is_shutdown():
         rospy.sleep(0.3)
-        node._move()
+        node.move()

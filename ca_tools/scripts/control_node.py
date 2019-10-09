@@ -36,9 +36,7 @@ class STATES(Enum): FORWARD=1;STOP_MOVING_FORWARD=2;TURNING=3;STOP_TURNING=4
 def signal_handler(signal, frame, queue_size=1):
   # This will execute when Ctrl-c is pressed
     pub = rospy.Publisher(VEL_PUB_TOPIC, Twist, queue_size=1)
-    aux = Twist()
-    pub.publish(aux)
-    sys.exit(0)
+    aux = Twist();pub.publish(aux);sys.exit(0)
 
 
 class CtrlNode:
@@ -187,15 +185,8 @@ class CtrlNode:
         Returns:
             [bool] -- [description]
         """
-        return (abs(self._diff_distance()) < DISTANCE_TOLERANCE)
+        return (self._diff_distance() < DISTANCE_TOLERANCE)
 
-    def _reached_position(self):
-        """Checks if robot is at the goal, with some tolerance
-        Returns:
-        [bool] -- [true=->robot is at the goal]
-        """
-
-        return (abs(self._diff_distance()) < DISTANCE_TOLERANCE)
 
     def _diff_distance(self):
         """Returns the distance beteween the robot and the goal

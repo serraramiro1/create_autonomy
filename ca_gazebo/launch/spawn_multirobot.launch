@@ -2,7 +2,7 @@
   <!-- https://answers.ros.org/question/229489/how-do-i-create-dynamic-launch-files/ -->
   <arg name="nr" default="$(optenv NUM_ROBOTS 1)"/>
   <arg name="rviz" default="$(optenv RVIZ true)"/>
-  <arg name="navigation" default="$(optenv NAVIGATION none)"/>
+  <arg name="localization" default="$(optenv LOCALIZATION none)"/>
   
   <!-- Start 1 robot -->
   <group ns="$(eval 'create' + str(arg('nr')))">
@@ -12,9 +12,9 @@
 
     <param name="tf_prefix" value="create$(arg nr)_tf" />
 
-    <!-- Navigation -->
+    <!-- localization -->
 
-    <include if="$(eval str(arg('navigation'))=='amcl' or str(arg('navigation'))=='slam')"
+    <include if="$(eval str(arg('localization'))=='amcl' or str(arg('localization'))=='slam')"
      file="$(find ca_move_base)/launch/navigate.launch">
       <arg name="robot_name" value="create$(arg nr)"/>
     </include>

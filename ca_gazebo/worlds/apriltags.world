@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 <sdf version='1.6'>
   <world name='default'>
+
+      <light type="spot" name="point_light">
+      <pose>1.482 -1.417 22 0 0 0</pose>
+      <diffuse>255 255 255 255</diffuse>
+      <specular>23 23 23 255</specular>
+      <attenuation>
+        <range>200</range>
+        <linear>0</linear>
+        <constant>0.25</constant>
+        <quadratic>0.</quadratic>
+      </attenuation>
+      <cast_shadows>false</cast_shadows>
+    </light>
+
     <include>
       <uri>model://ground_plane</uri>
     </include>
@@ -31,13 +45,8 @@
     </physics>
     <include>
       <uri>model://camera</uri>
-      <pose>-2.70 3.410 2.6020 0 0.4035 -0.738</pose>
+      <pose>2.486 -1.417 17.766 0.644 1.547 -2.47</pose>
       <name>camera1</name>
-    </include>
-    <include>
-      <uri>model://camera</uri>
-      <pose>6.7052 -5.900 2.602 0 0.5035 2.41235</pose>
-      <name>camera2</name>
     </include>
     <include>
       <uri>model://grey_square</uri>
@@ -47,23 +56,8 @@
     </include>
     <include>
       <uri>model://apriltag1</uri>
-      <pose>1.9041 3.4827 1.5365 0 0 -1.57</pose>
+      <pose>1.559 -2.069 0.0298 3.1415 -1.562 1.571</pose>
       <name>AprilTag1</name>
-    </include>
-    <include>
-      <uri>model://apriltag2</uri>
-      <pose>6.6124 -1.4020 1.630373 0 0 0</pose>
-      <name>AprilTag2</name>
-    </include>
-    <include>
-      <uri>model://apriltag3</uri>
-      <pose>1.8149 -6.058 1.5365 0 0 -1.57</pose>
-      <name>AprilTag3</name>
-    </include>
-    <include>
-      <uri>model://apriltag4</uri>
-      <pose>-2.8322 -1.5188 1.40 0 0 0</pose>
-      <name>AprilTag4</name>
     </include>
   </world>
 </sdf>

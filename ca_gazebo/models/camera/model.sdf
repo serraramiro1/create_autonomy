@@ -13,6 +13,7 @@
         </geometry>
       </visual>
       <sensor name='my_camera' type='camera'>
+        <pose>0.2 0 0 0 0 0</pose>
         <camera>
           <save enabled="true">
             <path>/tmp/camera_save_tutorial</path>

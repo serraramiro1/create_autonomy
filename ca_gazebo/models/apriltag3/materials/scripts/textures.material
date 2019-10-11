@@ -1,0 +1,13 @@
+material TexturedShape/Apriltag3
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture apriltag3.png
+      }
+    }
+  }
+}

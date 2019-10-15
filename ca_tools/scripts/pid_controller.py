@@ -14,6 +14,7 @@ from math import pi
 import rospy
 from enum import Enum
 
+from control_node import CtrlNode, STATES
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Pose2D
 from geometry_msgs.msg import PoseStamped
@@ -35,15 +36,16 @@ PATH_THRESHOLD = 60
 VEL_PUB_TOPIC = "/create1/cmd_vel"
 GTS_SUB_TOPIC = "/create1/gts"
 
-class STATES(Enum): FORWARD=1;STOP_MOVING_FORWARD=2;TURNING=3;STOP_TURNING=4
-    
+
 def signal_handler(signal, frame, queue_size=1):
   # This will execute when Ctrl-c is pressed
     pub = rospy.Publisher(VEL_PUB_TOPIC, Twist, queue_size=1)
-    aux = Twist();pub.publish(aux);sys.exit(0)
+    aux = Twist()
+    pub.publish(aux)
+    sys.exit(0)
 
 
-class CtrlNode:
+class PidCtrlNode(CtrlNode):
     """A class that inits a node, in order to make the robot move to 4 fixed points, drawing a square
     """
 
@@ -62,7 +64,7 @@ class CtrlNode:
         self._my_pid_lineal_setpoint_pub = rospy.Publisher(
             "/lineal/setpoint", Float64, queue_size=10)
         self._my_gts_sub = rospy.Subscriber(
-            GTS_SUB_TOPIC, Odometry, self._callback)
+            GTS_SUB_TOPIC, Odometry, self._gts_callback)
         self._my_pid_angular_effort_sub = rospy.Subscriber(
             "/angular/control_effort", Float64, self._angular_effort_callback)
         self._my_path_publisher = rospy.Publisher(
@@ -77,6 +79,7 @@ class CtrlNode:
         self._my_goals[2] = Pose2D(2, 2, 0)
         self._my_goals[3] = Pose2D(2, 0, 0)
 
+        rospy.loginfo("entered init")
         self._lineal_state = None
         self._goal_num = 0
         self._state = STATES.STOP_MOVING_FORWARD
@@ -102,7 +105,7 @@ class CtrlNode:
         """
         self._my_pid_lineal_effort = data.data
 
-    def _callback(self, data):
+    def _gts_callback(self, data):
         """Callback for groundtruth
 
         Arguments:
@@ -113,7 +116,7 @@ class CtrlNode:
         q = data.pose.pose.orientation  # get orientation quaternion
         self._path_threshold -= 1
         q_arr = [q.x, q.y, q.z, q.w]
-        (_,_,self._my_pose.theta) = euler_from_quaternion(q_arr)
+        (_, _, self._my_pose.theta) = euler_from_quaternion(q_arr)
         if (self._path_threshold == 0):  # add the pose to path every PATH_THRESHOLD cycles
             aux = PoseStamped()
             aux.pose = data.pose.pose
@@ -127,21 +130,14 @@ class CtrlNode:
         if not (self._my_pose.x == None or self._my_pose.y == None):
             """State machine
             """
+            rospy.loginfo("ENTERED, MY STATE IS %s", self._state)
             self._my_pid_lineal_setpoint_pub.publish(0.0)
             self._my_pid_angular_setpoint_pub.publish(0.0)
             self._set_goal_angle()
             self._my_pid_lineal_state_pub.publish(self._diff_distance())
             self._my_pid_angular_state_pub.publish(self._diff_angle())
 
-            if self._state == STATES.TURNING:
-                self._turning()
-                return
-            if self._state == STATES.FORWARD:
-                self._forward()
-                return
-            if self._state == STATES.STOP_MOVING_FORWARD:
-                self._stop_moving_forward()
-                return
+            super(PidCtrlNode,self).move()
 
     def _forward(self):
         """Makes the robot move forward
@@ -149,88 +145,31 @@ class CtrlNode:
         if self._reached_position():
             rospy.loginfo("Reached position")
             self._stop()
+            self._get_next_goal()
             self._state = STATES.STOP_MOVING_FORWARD
             return
         aux = Twist()
-        aux.angular.z = -self._my_pid_angular_effort/PID_ANGULAR_EFFORT_ADJUST
-        aux.linear.x = -self._my_pid_lineal_effort/PID_LINEAL_EFFORT_ADJUST
+        aux.angular.z = - self._my_pid_angular_effort / PID_ANGULAR_EFFORT_ADJUST
+        aux.linear.x = - self._my_pid_lineal_effort / PID_LINEAL_EFFORT_ADJUST
         self._my_vel_pub.publish(aux)
 
-    def _stop(self):
-        """Stops the robot
-        """
-        aux = Twist()
-        self._my_vel_pub.publish(aux)
-
-    def _diff_angle(self):
-        """Calculates the difference between the angle goal and current angle
-
-        Returns:
-            [float] -- [Difference of angles in radians, wrapped between -pi/2 and pi/2]
-        """
-        auxangle = (self._my_angle_goal-self._my_pose.theta)
-
-        while (abs(auxangle) > pi):
-            if auxangle < (-pi):
-                auxangle += (2*pi)
-            elif auxangle > pi:
-                auxangle -= (2*pi)
-        return auxangle
-
-    def _stop_moving_forward(self):
-        """Sets new goal
-        """
-        self._stop()
-        self._goal_num += 1
-        self._goal_num %= 4
-        self._set_goal_angle()
-        self._state = STATES.TURNING
 
     def _turning(self):
         """Turns while standing still
         """
-
+        rospy.loginfo("Diff angle is %f",self._diff_angle())
         if (self._reached_angle()):
             rospy.loginfo("Reached angle!")
             self._stop()
             self._state = STATES.FORWARD
-
         else:
             aux = Twist()
-            aux.angular.z = -self._my_pid_angular_effort/PID_ANGULAR_EFFORT_ADJUST
+            aux.angular.z = - self._my_pid_angular_effort / PID_ANGULAR_EFFORT_ADJUST
             self._my_vel_pub.publish(aux)
-
-    def _set_goal_angle(self):
-        """Sets angle goal basing on the actual position and goal position
-        """
-        self._my_angle_goal = (math.atan2(
-            (self._my_goals[self._goal_num].y-self._my_pose.y), self._my_goals[self._goal_num].x-self._my_pose.x))
-
-    def _reached_position(self):
-        """Checks if robot is at the goal, with some tolerance
-
-        Returns:
-            [bool] -- [true=->robot is at the goal]
-        """
-
-        return (self._diff_distance() < DISTANCE_TOLERANCE)
-
-    def _reached_angle(self):
-        """Checks if the robot reached the required angle
-
-        Returns:
-            [bool] -- [True if reached required angle]
-        """
-        return (abs(self._diff_angle()) < ANGLE_TOLERANCE)
-
-    def _diff_distance(self):
-        """Returns the distance between the robot and the goal
-        """
-        return(math.hypot(self._my_goals[self._goal_num].x-self._my_pose.x, self._my_goals[self._goal_num].y-self._my_pose.y))
-
+    
 
 if __name__ == '__main__':
-    node = CtrlNode()
+    node = PidCtrlNode()
     # associates signal with handler
     signal.signal(signal.SIGINT, signal_handler)
     while not rospy.is_shutdown():

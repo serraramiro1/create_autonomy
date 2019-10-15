@@ -137,7 +137,7 @@ class PidCtrlNode(CtrlNode):
             self._my_pid_lineal_state_pub.publish(self._diff_distance())
             self._my_pid_angular_state_pub.publish(self._diff_angle())
 
-            super(PidCtrlNode,self).move()
+            super(PidCtrlNode,self).move() #calls the parent's method move()
 
     def _forward(self):
         """Makes the robot move forward

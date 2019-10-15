@@ -40,6 +40,11 @@ def signal_handler(signal, frame, queue_size=1):
 
 
 class CtrlNode(object):
+    """Base class for controlling the robot, defines the state machine
+    and some common methods. As well as a trivial implementation of the problem
+    
+    
+    """
 
     def __init__(self):
         """Initializations

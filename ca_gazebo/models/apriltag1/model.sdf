@@ -21,13 +21,13 @@
       <visual name='visual'>
         <geometry>
           <box>
-            <size>0.001 1 1</size>
+            <size>0.001 0.5 0.5</size>
           </box>
         </geometry>
         <material>
           <script>
-            <uri>model://apriltag1/materials/scripts</uri>
-            <uri>model://apriltag1/materials/textures</uri>
+              <uri>model://apriltag1/materials/scripts/textures.material</uri>
+              <uri>model://apriltag1/materials/textures/apriltag1.png</uri>
             <name>TexturedShape/Apriltag1</name>
           </script>
           <ambient>0.3 0.3 0.3 1</ambient>

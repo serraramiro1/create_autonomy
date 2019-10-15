@@ -1,9 +1,9 @@
 <launch>
 	<arg name="env" default="apriltags"/>
-
   	<arg name="paused" value="$(optenv PAUSED false)"/>
 	<arg name="gui" value="$(optenv GUI true)"/>
 	<arg name="debug" value="$(optenv DEBUG false)"/>
+	<env name="GAZEBO_MODEL_PATH" value="$(find ca_gazebo)/models"/>
 
 	<!-- Launch Gazebo world -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">

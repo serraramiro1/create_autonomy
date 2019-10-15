@@ -1,4 +1,4 @@
-material TexturedShape/Apriltag3
+material TexturedShape/Apriltag1
 {
   technique
   {
@@ -6,8 +6,9 @@ material TexturedShape/Apriltag3
     {
       texture_unit
       {
-        texture apriltag3.png
+        texture apriltag1.png
       }
     }
   }
 }
+

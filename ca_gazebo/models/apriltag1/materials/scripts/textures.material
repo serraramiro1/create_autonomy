@@ -11,4 +11,17 @@ material TexturedShape/Apriltag1
     }
   }
 }
+material TexturedShape/Apriltag2
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture apriltag2.png
+      }
+    }
+  }
+}
 

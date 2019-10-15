@@ -26,8 +26,8 @@
         </geometry>
         <material>
           <script>
-            <uri>model://apriltag2/materials/scripts</uri>
-            <uri>model://apriltag2/materials/textures</uri>
+            <uri>model://apriltag1/materials/scripts</uri>
+            <uri>model://apriltag1/materials/textures</uri>
             <name>TexturedShape/Apriltag2</name>
           </script>
           <ambient>0.3 0.3 0.3 1</ambient>

@@ -176,7 +176,7 @@ class CtrlNode(object):
         """Sets the goal angle with the current position and the goal position
         """
         self._my_angle_goal = math.atan2(
-            (self._my_goals[self._goal_num].y-self._my_pose.y), self._my_goals[self._goal_num].x-self._my_pose.x)
+            (self._my_goals[self._goal_num].y - self._my_pose.y), self._my_goals[self._goal_num].x - self._my_pose.x)
 
     def _reached_angle(self):
         """Returns true if reached angle
@@ -198,7 +198,7 @@ class CtrlNode(object):
     def _diff_distance(self):
         """Returns the distance between the robot and the goal
         """
-        return(math.hypot(self._my_goals[self._goal_num].x-self._my_pose.x, self._my_goals[self._goal_num].y-self._my_pose.y))
+        return(math.hypot(self._my_goals[self._goal_num].x - self._my_pose.x, self._my_goals[self._goal_num].y - self._my_pose.y))
 
 
 if __name__ == '__main__':

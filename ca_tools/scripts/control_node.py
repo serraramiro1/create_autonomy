@@ -84,7 +84,6 @@ class CtrlNode(object):
         """State machine
         """
         if not (self._my_pose.x == None or self._my_pose.y == None):
-            rospy.loginfo("ENTERED MOVE, my state is %s", self._state)
             if self._state == STATES.TURNING:
                 self._turning()
                 return

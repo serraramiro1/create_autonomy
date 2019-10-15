@@ -78,8 +78,6 @@ class PidCtrlNode(CtrlNode):
         self._my_goals[1] = Pose2D(0, 2, 0)
         self._my_goals[2] = Pose2D(2, 2, 0)
         self._my_goals[3] = Pose2D(2, 0, 0)
-
-        rospy.loginfo("entered init")
         self._lineal_state = None
         self._goal_num = 0
         self._state = STATES.STOP_MOVING_FORWARD
@@ -130,7 +128,6 @@ class PidCtrlNode(CtrlNode):
         if not (self._my_pose.x == None or self._my_pose.y == None):
             """State machine
             """
-            rospy.loginfo("ENTERED, MY STATE IS %s", self._state)
             self._my_pid_lineal_setpoint_pub.publish(0.0)
             self._my_pid_angular_setpoint_pub.publish(0.0)
             self._set_goal_angle()
@@ -157,7 +154,6 @@ class PidCtrlNode(CtrlNode):
     def _turning(self):
         """Turns while standing still
         """
-        rospy.loginfo("Diff angle is %f",self._diff_angle())
         if (self._reached_angle()):
             rospy.loginfo("Reached angle!")
             self._stop()

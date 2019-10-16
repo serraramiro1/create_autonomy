@@ -15,13 +15,6 @@
 		<arg name="world_name" value="$(find ca_gazebo)/worlds/$(arg env).world"/>
 	</include>
 	<node pkg="tf" type="static_transform_publisher" name="camera_link_broadcaster" args="2.486 -1.417 9.80 3.14159 3.14159 0 map april_camera_link 100" />
-	<param name="create1/amcl/initial_pose_x" value="2.15"/>
-	<param name="create1/amcl/initial_pose_y" value="-0.2"/>
-	<param name="create1/amcl/initial_pose_a" value="0"/>
-	<param name="create2/amcl/initial_pose_x" value="5"/>
-	<param name="create2/amcl/initial_pose_y" value="1"/>
-	<param name="create2/amcl/initial_pose_a" value="1.5708"/>
-
 
 	<!-- Spawn robot/s -->
 	<include file="$(find ca_gazebo)/launch/spawn_multirobot.launch"/>

@@ -3,7 +3,7 @@
   <model name='camera'>
     <static>true</static>
     <pose>-1 0 2 0 1 0</pose>
-    <link name='link'>
+    <link name='april_camera_link'>
       <visual name='visual'>
         <geometry>
         <mesh>
@@ -13,12 +13,12 @@
         </geometry>
       </visual>
       <sensor name='my_camera' type='camera'>
-        <pose>0.2 0 0 0 0 0</pose>
+        <pose>0.2 0 0 -1.577 0 0</pose>
         <camera>
-          <save enabled="true">
-            <path>/tmp/camera_save_tutorial</path>
+          <save enabled="false">
+            <path>/tmp/camera_save</path>
           </save>
-          <horizontal_fov>1.047</horizontal_fov>
+          <horizontal_fov>1.047</horizontal_fov> <!-- 188.46 degrees-->
           <image>
             <width>1920</width>
             <height>1080</height>
@@ -30,6 +30,21 @@
         </camera>
         <always_on>1</always_on>
         <update_rate>30</update_rate>
+
+          <plugin name="april_tag_camera_controller" filename="libgazebo_ros_camera.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>0</updateRate>
+            <cameraName>april_tag_camera</cameraName>
+            <imageTopicName>image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <frameName>april_camera_link</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>0.0</distortionK1>
+            <distortionK2>0.0</distortionK2>
+            <distortionK3>0.0</distortionK3>
+            <distortionT1>0.0</distortionT1>
+            <distortionT2>0.0</distortionT2>
+          </plugin>
       </sensor>
     </link>
   </model>

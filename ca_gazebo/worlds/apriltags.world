@@ -45,7 +45,7 @@
     </physics>
     <include>
       <uri>model://camera</uri>
-      <pose>2.486 -1.417 17.766 0.644 1.547 -2.47</pose>
+      <pose>2.486 -1.417 10.0 0 1.57079 0</pose>
       <name>camera1</name>
     </include>
     <include>

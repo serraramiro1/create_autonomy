@@ -2,7 +2,7 @@
 <sdf version='1.6'>
   <model name='grey_square'>
     <link name='link_clone_0'>
-      <pose frame=''>-0.918551 4.56694 1.4 0 0 -1.56949</pose>
+      <pose frame=''>1.90491 4.42316 1.4 0 0 -1.56949</pose>
       <inertial>
         <mass>1</mass>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -23,7 +23,7 @@
         <cast_shadows>0</cast_shadows>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -49,7 +49,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <surface>
@@ -100,7 +100,7 @@
       </collision>
     </link>
     <link name='link_clone_0_clone'>
-      <pose frame=''>8.8795 4.65571 1.4 0 0 -1.56949</pose>
+      <pose frame=''>6.69275 4.47706 1.4 0 0 -1.56949</pose>
       <inertial>
         <mass>1</mass>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -121,7 +121,7 @@
         <cast_shadows>0</cast_shadows>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -147,7 +147,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <surface>
@@ -198,7 +198,7 @@
       </collision>
     </link>
     <link name='link_clone_0_clone_0'>
-      <pose frame=''>3.94409 9.53382 1.4 0 0 -3.13166</pose>
+      <pose frame=''>4.31117 6.83742 1.4 0 0 -3.13166</pose>
       <inertial>
         <mass>1</mass>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -219,7 +219,7 @@
         <cast_shadows>0</cast_shadows>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -245,7 +245,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <surface>
@@ -296,7 +296,7 @@
       </collision>
     </link>
     <link name='link_clone_0_clone_0_clone'>
-      <pose frame=''>3.94732 -0.3056 1.4 0 0 -3.13166</pose>
+      <pose frame=''>4.29026 2.05207 1.4 0 0 -3.13166</pose>
       <inertial>
         <mass>1</mass>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -317,7 +317,7 @@
         <cast_shadows>0</cast_shadows>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -343,7 +343,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>10 0.2 2.5</size>
+            <size>5 0.2 2.5</size>
           </box>
         </geometry>
         <surface>

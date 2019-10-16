@@ -50,7 +50,10 @@
     <xacro:imu_sensor name="imu">
       <origin xyz="0 -0.04 0.13" rpy="0 0 0"/>
     </xacro:imu_sensor>
-    <xacro:april_tag/>
+    <xacro:april_tag>
+      <origin xyz="0 0 0.25" rpy="0 0 1.577" />
+    </xacro:april_tag>
+
     <xacro:create_wheel prefix="left" y_offset="${wheel_separation / 2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:create_wheel prefix="right" y_offset="${wheel_separation / -2}" wheel_radius="${wheel_radius}" wheel_width="${wheel_width}"/>
     <xacro:caster_wheel/>

@@ -3,18 +3,6 @@
   <model name='apriltag1'>
     <link name='link'>
       <pose frame=''>0 0 0 0 0 0</pose>
-      <inertial>
-        <mass>0.0001</mass>
-        <inertia>
-          <ixx>0.166667</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.166667</iyy>
-          <iyz>0</iyz>
-          <izz>0.166667</izz>
-        </inertia>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-      </inertial>
       <self_collide>0</self_collide>
       <kinematic>0</kinematic>
       <gravity>0</gravity>

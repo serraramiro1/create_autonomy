@@ -1,7 +1,6 @@
 <launch>
   <arg name="robot_name"/>
-  <arg name="localization" default="$(optenv LOCALIZATION amcl)"/>
-
+  <arg name="localization"/>
 	<!-- Bumper to point cloud -->
 	<include file="$(find ca_bumper2pc)/launch/standalone.launch"/>
 

@@ -14,9 +14,10 @@
 
     <!-- localization -->
 
-    <include if="$(eval str(arg('localization'))=='amcl' or str(arg('localization'))=='slam')"
+    <include if="$(eval str(arg('localization'))!='none')"
      file="$(find ca_move_base)/launch/navigate.launch">
       <arg name="robot_name" value="create$(arg nr)"/>
+      <arg name="localization" value="$(arg localization)"/>
     </include>
 
     <!-- RViz -->

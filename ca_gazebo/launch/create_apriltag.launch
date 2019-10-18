@@ -3,7 +3,6 @@
   	<arg name="paused" value="$(optenv PAUSED false)"/>
 	<arg name="gui" value="$(optenv GUI true)"/>
 	<arg name="debug" value="$(optenv DEBUG false)"/>
-	
 	<!--set the position where the robot will be spawned-->
 	<param name="create1/amcl/initial_pose_x" value="2.25"/>
   	<param name="create1/amcl/initial_pose_y" value="-1.5"/>
@@ -18,9 +17,15 @@
 		<arg name="world_name" value="$(find ca_gazebo)/worlds/$(arg env).world"/>
 	</include>
 
-	<!--Publish the transform between the camera and the map frame, to close the cycle --> -->
+	<!--Publish the transform between the camera and the map frame, to close the cycle -->
 	<node pkg="tf" type="static_transform_publisher" name="camera_link_broadcaster" args="2.486 -1.417 9.80 3.14159 3.14159 0 map april_camera_link 20" />
-
+	
+	<include file="$(find apriltag_ros)/launch/continuous_detection.launch">
+		<arg name="node_namespace" value="april_tag_camera"/>
+		<arg name="camera_name" value="april_tag_camera"/>
+		<arg name="camera_frame" value="april_camera_link"/>
+		<arg name="image_topic" value="april_camera_image_raw"/>
+	</include>
 	<!-- Spawn robot/s -->
 	<include file="$(find ca_gazebo)/launch/spawn_multirobot.launch"/>
 

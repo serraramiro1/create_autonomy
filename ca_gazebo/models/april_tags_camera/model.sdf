@@ -1,13 +1,13 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='camera'>
+  <model name='april_tags_camera'>
     <static>true</static>
     <pose>-1 0 2 0 1 0</pose>
     <link name='april_camera_link'>
       <visual name='visual'>
         <geometry>
         <mesh>
-          <uri>model://camera/meshes/camera.stl</uri>
+          <uri>model://april_tags_camera/meshes/camera.stl</uri>
           <scale>2.5 2.5 2.5</scale>
         </mesh>
         </geometry>
@@ -15,13 +15,10 @@
       <sensor name='my_camera' type='camera'>
         <pose>0.2 0 0 -1.577 0 0</pose>
         <camera>
-          <save enabled="false">
-            <path>/tmp/camera_save</path>
-          </save>
           <horizontal_fov>1.047</horizontal_fov> <!-- 188.46 degrees-->
           <image>
-            <width>1920</width>
-            <height>1080</height>
+            <width>680</width>
+            <height>480</height>
           </image>
           <clip>
             <near>0.1</near>
@@ -33,9 +30,9 @@
 
           <plugin name="april_tag_camera_controller" filename="libgazebo_ros_camera.so">
             <alwaysOn>true</alwaysOn>
-            <updateRate>0</updateRate>
+            <updateRate>60</updateRate>
             <cameraName>april_tag_camera</cameraName>
-            <imageTopicName>image_raw</imageTopicName>
+            <imageTopicName>april_camera_image_raw</imageTopicName>
             <cameraInfoTopicName>camera_info</cameraInfoTopicName>
             <frameName>april_camera_link</frameName>
             <hackBaseline>0.07</hackBaseline>

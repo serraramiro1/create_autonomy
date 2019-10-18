@@ -44,9 +44,9 @@
       </ode>
     </physics>
     <include>
-      <uri>model://camera</uri>
+      <uri>model://april_tags_camera</uri>
       <pose>2.486 -1.417 10.0 0 1.57079 0</pose>
-      <name>camera1</name>
+      <name>april_tags_camera</name>
     </include>
     <include>
       <uri>model://grey_square</uri>

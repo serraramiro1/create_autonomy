@@ -14,7 +14,6 @@
             <parent link="base_link" />
             <child link="april_tag_link" />
         </joint>
-        <!---->
         <gazebo reference="april_tag_link">
             <visual>
                     <material>

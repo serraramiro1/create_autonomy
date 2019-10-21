@@ -13,6 +13,7 @@ else()
 				roscpp
 				ca_msgs
 				apriltag_ros
+				tf
 	)
 
   catkin_package(
@@ -24,6 +25,7 @@ else()
 			roscpp
 			ca_msgs
 			apriltag_ros
+			tf
 	)
 
 	link_directories(${GAZEBO_LIBRARY_DIRS})

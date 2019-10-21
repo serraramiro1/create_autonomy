@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='grey_square'>
+  <model name='big_room'>
     <link name='link_clone_0'>
       <pose frame=''>1.90491 4.42316 1.4 0 0 -1.56949</pose>
       <inertial>

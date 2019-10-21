@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launches the pose publisher node -->
+    <node pkg="ca_gazebo" type="publishtagspose.py" name="april_tags_pose_publisher"/>
+</launch>

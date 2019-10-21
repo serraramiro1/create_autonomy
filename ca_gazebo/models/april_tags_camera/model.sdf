@@ -2,13 +2,12 @@
 <sdf version='1.6'>
   <model name='april_tags_camera'>
     <static>true</static>
-    <pose>-1 0 2 0 1 0</pose>
+    <pose>0 0 0 0 0 0</pose>
     <link name='april_camera_link'>
       <visual name='visual'>
         <geometry>
         <mesh>
-          <uri>model://april_tags_camera/meshes/camera.stl</uri>
-          <scale>2.5 2.5 2.5</scale>
+          <uri>model://april_tags_camera/meshes/scaled_lens.stl</uri>
         </mesh>
         </geometry>
       </visual>

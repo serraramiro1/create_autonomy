@@ -45,7 +45,7 @@
     </physics>
     <include>
       <uri>model://april_tags_camera</uri>
-      <pose>2.486 -1.417 10.0 0 1.57079 0</pose>
+      <pose>1.968 -0.84 10.0 0 1.57079 0</pose>
       <name>april_tags_camera</name>
     </include>
     <include>

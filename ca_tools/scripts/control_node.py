@@ -19,8 +19,6 @@ from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
 
 
-
-
 LINEAR_VEL = 0.2
 DISTANCE_TOLERANCE = 0.1
 ANGLE_TOLERANCE = 0.2
@@ -30,20 +28,26 @@ GTS_SUBTOPIC = "/create1/gts"
 BIG_ANGLE_THRESHOLD = 1.0  # minimum angle in which the robot will stop and turn
 
 
-class STATES(Enum): FORWARD=1;STOP_MOVING_FORWARD=2;TURNING=3;STOP_TURNING=4
+class STATES(Enum):
+    FORWARD = 1
+    STOP_MOVING_FORWARD = 2
+    TURNING = 3
+    STOP_TURNING = 4
 
 
 def signal_handler(signal, frame, queue_size=1):
   # This will execute when Ctrl-c is pressed
     pub = rospy.Publisher(VEL_PUB_TOPIC, Twist, queue_size=1)
-    aux = Twist();pub.publish(aux);sys.exit(0)
+    aux = Twist()
+    pub.publish(aux)
+    sys.exit(0)
 
 
 class CtrlNode(object):
     """Base class for controlling the robot, defines the state machine
     and some common methods. As well as a trivial implementation of the problem
-    
-    
+
+
     """
 
     def __init__(self):
@@ -51,7 +55,7 @@ class CtrlNode(object):
         """
 
         rospy.init_node('control_node')
-        
+
         self._my_vel_pub = rospy.Publisher(VEL_PUB_TOPIC, Twist, queue_size=10)
         # Create a subscriber with appropriate topic, custom message and name of callback function.
         self._my_sub = rospy.Subscriber(
@@ -70,7 +74,7 @@ class CtrlNode(object):
 
     def _gts_callback(self, data):
         """Callback to groundtrouth
-        
+
         Arguments:
             data {[Odometry msg]} -- [Odometry by gts]
         """
@@ -78,7 +82,7 @@ class CtrlNode(object):
         self._my_pose.y = data.pose.pose.position.y
         q = data.pose.pose.orientation
         q_arr = [q.x, q.y, q.z, q.w]
-        (_,_,self._my_pose.theta) = euler_from_quaternion(q_arr)
+        (_, _, self._my_pose.theta) = euler_from_quaternion(q_arr)
 
     def move(self):
         """State machine
@@ -128,7 +132,7 @@ class CtrlNode(object):
         self._my_vel_pub.publish(aux)
 
     def _forward(self):
-        
+
         if (self._reached_position()):
             self._stop()
             self._state = STATES.STOP_MOVING_FORWARD
@@ -158,7 +162,7 @@ class CtrlNode(object):
 
     def _angle_is_big(self):
         """Return if the angle difference between robot and goal is greater than a threshold
-        
+
         Returns:
             [boolean] -- [description]
         """
@@ -179,7 +183,7 @@ class CtrlNode(object):
 
     def _reached_angle(self):
         """Returns true if reached angle
-        
+
         Returns:
             [bool] -- [description]
         """
@@ -187,12 +191,11 @@ class CtrlNode(object):
 
     def _reached_position(self):
         """Returns true if reached position
-        
+
         Returns:
             [bool] -- [description]
         """
         return (self._diff_distance() < DISTANCE_TOLERANCE)
-
 
     def _diff_distance(self):
         """Returns the distance between the robot and the goal

@@ -134,7 +134,7 @@ class PidCtrlNode(CtrlNode):
             self._my_pid_lineal_state_pub.publish(self._diff_distance())
             self._my_pid_angular_state_pub.publish(self._diff_angle())
 
-            super(PidCtrlNode,self).move() #calls the parent's method move()
+            super(PidCtrlNode, self).move()  # calls the parent's method move()
 
     def _forward(self):
         """Makes the robot move forward
@@ -150,7 +150,6 @@ class PidCtrlNode(CtrlNode):
         aux.linear.x = - self._my_pid_lineal_effort / PID_LINEAL_EFFORT_ADJUST
         self._my_vel_pub.publish(aux)
 
-
     def _turning(self):
         """Turns while standing still
         """
@@ -162,7 +161,7 @@ class PidCtrlNode(CtrlNode):
             aux = Twist()
             aux.angular.z = - self._my_pid_angular_effort / PID_ANGULAR_EFFORT_ADJUST
             self._my_vel_pub.publish(aux)
-    
+
 
 if __name__ == '__main__':
     node = PidCtrlNode()

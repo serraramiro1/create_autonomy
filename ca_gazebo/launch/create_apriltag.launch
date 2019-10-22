@@ -1,5 +1,4 @@
 <launch>
-	<arg name="env" default="apriltags"/>
   	<arg name="paused" default="$(optenv PAUSED false)"/>
 	<arg name="gui" default="$(optenv GUI true)"/>
 	<arg name="debug" default="$(optenv DEBUG false)"/>
@@ -11,13 +10,13 @@
   	<param name="create1/amcl/initial_pose_a" value="0"/>
 	<!-- Launch Gazebo world -->
 
-	<node pkg="ca_gazebo" type="publish_tags_poses.py" name="april_tags_pose_publisher" if="$(arg aprildebug)">
+	<node pkg="ca_tools" type="publish_tags_poses.py" name="april_tags_pose_publisher" if="$(arg aprildebug)">
 		<param name="tags_tf_2_map_rate" type="double" value="10.0"/>
 	</node>
 	<include file="$(find ca_gazebo)/launch/create_empty_world.launch">
 		<arg name="debug" value="$(arg debug)" />
 		<arg name="gui" value="$(arg gui)" />
-		<arg name="env" value="$(arg env)"/>
+		<arg name="env" value="apriltags"/>
 	</include>
 
 	<!--Publish the transform between the camera and the map frame, to close the cycle -->

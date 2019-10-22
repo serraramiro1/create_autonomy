@@ -51,7 +51,6 @@
     <include>
       <uri>model://big_room</uri>
       <pose>-2.093255 -5.88 -0.3 0 0 0</pose>
-      <scale>2 2 0</scale>
       <name>big_room</name>
     </include>
     <include>

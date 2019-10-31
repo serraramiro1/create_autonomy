@@ -1,0 +1,15 @@
+material custom_barrier
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture stripes.jpg
+	scale 0.2 0.5
+      }
+    }
+  }
+}
+

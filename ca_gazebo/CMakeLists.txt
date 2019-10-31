@@ -39,6 +39,10 @@ else()
 	add_dependencies (create_color_plugin ${catkin_EXPORTED_TARGETS})
 	target_link_libraries(create_color_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} CameraPlugin )
 
+	add_library(barrier_plugin src/barrier_plugin.cpp)
+	add_dependencies (barrier_plugin ${catkin_EXPORTED_TARGETS})
+	target_link_libraries(barrier_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
   install(DIRECTORY launch worlds models
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 

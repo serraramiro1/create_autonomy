@@ -869,7 +869,12 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.04145 -1.12671 0 0 -0 0</pose>
+      <pose frame=''>-1.04145 -1.0671 0 0 -0 0</pose>
     </model>
+    <include>
+      <uri>model://create_autorace/custom_barrier</uri>
+      <pose>-0.639 1.854 0.03 0 1.57079 1.577</pose>
+      <name>custom_barrier</name>
+    </include>
   </world>
 </sdf>

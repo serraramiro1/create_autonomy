@@ -1,0 +1,95 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='custom_barrier'>
+ 
+    <link name='barrier'>
+      <inertial>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.166667</izz>
+        </inertia>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+      </inertial>
+      <self_collide>0</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+      <pose frame=''>0 -0 0.214418 0 -0 0</pose>
+      <gravity>0</gravity>
+      <visual name='visual'>
+        <geometry>
+          <box>
+            <size>0.6 0.02 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://create_autorace/custom_barrier/materials/scripts/custom_barrier.material</uri>
+            <uri>model://create_autorace/custom_barrier/materials/textures</uri>
+            <name>custom_barrier</name>
+          </script>
+        <ambient>1 0 0 1</ambient>
+        </material>
+        <pose frame=''>0.3 0 0 0 -0 0</pose>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+    </link>
+
+    <link name="rev">
+      <inertial>
+        <mass>1555</mass>
+        <inertia>
+          <ixx>0.166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.166667</izz>
+        </inertia>
+      </inertial>
+      <visual name='visual'>
+        <geometry>
+          <box>
+            <size>0.1 0.05 0.05</size>
+          </box>
+        </geometry>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+        
+      </visual>
+      <self_collide>0</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+      <pose frame=''>0 -0 0.214418 0 -0 0</pose>
+      <gravity>0</gravity>
+
+    </link>
+
+    <joint name="barrier_joint" type="revolute">
+      <parent>rev</parent>
+      <child>barrier</child>
+      <pose>0 3 0 0 0 0</pose>
+
+      <axis>
+        <initial_position>1.577</initial_position> 
+        <xyz>0 1 0</xyz>
+      </axis>
+    </joint>
+
+    <static>0</static>
+    <allow_auto_disable>1</allow_auto_disable>
+    <plugin name="barrier_plugin" filename="libbarrier_plugin.so">
+      <update_rate>1</update_rate>
+    </plugin>
+  </model>
+</sdf>

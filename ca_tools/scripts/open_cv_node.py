@@ -20,8 +20,7 @@ class image_converter:
         self.image_sub = rospy.Subscriber(
             "/create1/raspicam/image_raw", Image, self.callback)
         self.cv_image = None
-        self.img_to_detect = cv2.imread(
-            '/create_ws/src/create_autonomy/ca_tools/scripts/images/stopsign.png')
+        self.img_to_detect = cv2.imread(rospy.get_param('img_url'))
         self.img_to_detect = cv2.cvtColor(
             self.img_to_detect, cv2.COLOR_BGR2GRAY)
 

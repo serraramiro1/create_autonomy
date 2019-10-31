@@ -1,4 +1,5 @@
 <launch>
+    <param name="img_url" type="string" value="/create_ws/src/create_autonomy/ca_tools/scripts/images/stopsign.png"/>
     <node pkg="ca_tools" type="line_action_server.py" name="linefollower" output="screen"/>
     <node pkg="ca_tools" type="open_cv_node.py" name="red_detector_node"/>
 </launch>

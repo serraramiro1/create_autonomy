@@ -89,7 +89,7 @@
     <static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
     <plugin name="barrier_plugin" filename="libbarrier_plugin.so">
-      <update_rate>1</update_rate>
+      <update_rate>0.2</update_rate>
     </plugin>
   </model>
 </sdf>

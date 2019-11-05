@@ -17,8 +17,9 @@ class LineFollowerActionServer(object):
     IS_RED_TOPIC = "/isred"
     _feedback = ca_tools.msg.linefollowerFeedback()
     _result = ca_tools.msg.linefollowerResult()
-    LINEAR_VEL = 0.1
+    LINEAR_VEL = 0.12  # linear vel
     ANGULAR_VEL = 0.2
+    IS_BARRIER_TOPIC = "/isbarrier"
     VEL_PUB_TOPIC = "/create1/cmd_vel"
     RIGHT_SENSOR_SUB_TOPIC = "/color_sensor_plugin/right_color_sensor"
     LEFT_SENSOR_SUB_TOPIC = "/color_sensor_plugin/left_color_sensor"
@@ -51,10 +52,14 @@ class LineFollowerActionServer(object):
             self.RIGHT_SENSOR_SUB_TOPIC, Bool, self._right_sensor_callback)
         self._is_red_sub = rospy.Subscriber(
             self.IS_RED_TOPIC, Bool, self._is_red_callback)
+
+        self._is_barrier_sub = rospy.Subscriber(
+            self.IS_BARRIER_TOPIC, Bool, self._is_barrier_callback)
         self._my_left_sensor_sub = rospy.Subscriber(
             self.LEFT_SENSOR_SUB_TOPIC, Bool, self._left_sensor_callback)
 
         self._has_reached_goal = False
+        self._is_barrier = False
         self._is_left_detected = False
         self._is_right_detected = False
         self._move_flag = False
@@ -67,10 +72,10 @@ class LineFollowerActionServer(object):
                                                  self._last_pose.position.y - self._current_pose.position.y)
 
     def _is_red_callback(self, data):
-        if data.data:
-            self._has_reached_goal = True
-            return
-        self._has_reached_goal = False
+        self._has_reached_goal = data.data
+    
+    def _is_barrier_callback(self, data):   
+        self._is_barrier = data.data
 
     def _left_sensor_callback(self, data):
         self._is_left_detected = data.data
@@ -82,24 +87,27 @@ class LineFollowerActionServer(object):
         aux = Twist()
         aux.linear.x = self.LINEAR_VEL
         self._my_vel_pub.publish(aux)
+        return
 
     def _move_left(self):
         aux = Twist()
         aux.angular.z = self.ANGULAR_VEL
-        aux.linear.x = self.LINEAR_VEL / 10
+        aux.linear.x = self.LINEAR_VEL / 20
         self._my_vel_pub.publish(aux)
 
     def _move_right(self):
         aux = Twist()
         aux.angular.z = -self.ANGULAR_VEL
-        aux.linear.x = self.LINEAR_VEL / 10
+        aux.linear.x = self.LINEAR_VEL / 20
         self._my_vel_pub.publish(aux)
 
     def move(self):
         """Public method that makes the robot move,
         it won't do nothing until a goal is recieved
         """
-
+        if self._is_barrier:
+            self._stop_moving()
+            return
         if(self._move_flag):
             if (self._is_left_detected and self._is_right_detected):
                 self._move_forward()
@@ -180,7 +188,7 @@ if __name__ == '__main__':
 
     rospy.init_node('linefollower')
     server = LineFollowerActionServer(rospy.get_name())
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(200)
     while(not rospy.is_shutdown()):
         server.move()
         rate.sleep()

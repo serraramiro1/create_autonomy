@@ -1,5 +1,10 @@
 <launch>
-    <param name="img_url" type="string" value="/create_ws/src/create_autonomy/ca_tools/scripts/images/stopsign.png"/>
+    <param name="red_detector/img_url" type="string" value="/create_ws/src/create_autonomy/ca_tools/scripts/images/stopsign.png"/>
+
     <node pkg="ca_tools" type="line_action_server.py" name="linefollower" output="screen"/>
-    <node pkg="ca_tools" type="open_cv_node.py" name="red_detector_node"/>
+
+    <node pkg="ca_tools" type="open_cv_node.py" name="red_detector_node" ns="red_detector">
+        <remap from="isred" to="/isred"/>
+    </node>
+    <node pkg="ca_tools" type="barrier_detector.py" name="barrier_detector_node"/>
 </launch>

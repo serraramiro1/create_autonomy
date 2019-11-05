@@ -25,11 +25,11 @@ class barrier_detector(object):
         self.image_sub = rospy.Subscriber(
             "/create1/raspicam/image_raw", Image, self.callback)
         self.cv_image = None
-
+        
     def process(self):
         count = 0
         # Loads an image
-        thetaa = []
+        theta = []
         # Check if image is loaded fine
         if self.cv_image is None:
             return
@@ -44,11 +44,11 @@ class barrier_detector(object):
         if linesP is not None:
             for i in range(0, len(linesP)):
                 l = linesP[i][0]
-                thetaa.append(math.atan((l[1] - l[0])/(l[3] - l[2])))
+                theta.append(math.atan((l[1] - l[0])/(l[3] - l[2])))
                 cv.line(cdstP, (l[0], l[1]), (l[2], l[3]),
                         (0, 0, 255), 3, cv.LINE_AA)
 
-        for x in thetaa:
+        for x in theta:
             if (abs(x) < 0.05):
                 count += 1
 

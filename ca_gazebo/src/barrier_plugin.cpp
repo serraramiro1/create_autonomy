@@ -78,24 +78,11 @@ public:
   // Pointer to the model
 private:
   physics::ModelPtr model;
-
-  // Pointer to the update event connection
-private:
-  event::ConnectionPtr updateConnection;
-
-private:
+  event::ConnectionPtr updateConnection; // Pointer to the update event connection
   common::Time last_update_;
-
-private:
   physics::WorldPtr world_;
-
-private:
   const double HORIZONTAL_POSITION = 1.577;
-
-private:
   const double VERTICAL_POSITION = 3.145;
-
-private:
   double update_period_;
 };
 

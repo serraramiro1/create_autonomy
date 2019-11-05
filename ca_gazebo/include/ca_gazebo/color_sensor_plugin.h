@@ -8,7 +8,7 @@
 
 #include <gazebo_plugins/gazebo_ros_camera_utils.h>
 
-typedef std::array<unsigned char, 3> my_color;
+typedef std::array<unsigned char, 3> my_color_type;
 
 namespace gazebo
 {
@@ -17,13 +17,13 @@ class GazeboRosColor : public CameraPlugin, GazeboRosCameraUtils
 
 public:
   /**
-   * @brief Construct a new Gazebo Ros my_color object
+   * @brief Construct a new Gazebo Ros color object
    * 
    */
   GazeboRosColor();
 
   /**
-   * @brief Destroy the Gazebo Ros my_color object
+   * @brief Destroy the Gazebo Ros color object
    * 
    */
   ~GazeboRosColor();
@@ -45,7 +45,7 @@ public:
    * @return true 
    * @return false 
    */
-  bool IsColor(const my_color & target, const my_color & color);
+  bool IsColor(const my_color_type & target, const my_color_type & color);
 
 protected:
   /**
@@ -68,7 +68,7 @@ protected:
   double _fov;
   double _range;
 // Initialize a Map of string & vector of int using initializer_list
-  const std::map<std::string, my_color > map_of_colors_ = 	{
+  const std::map<std::string, my_color_type > map_of_colors_ = 	{
 							{ "white", {255, 255, 255} },
 							{ "yellow", {255, 255, 0} }
 							};
@@ -76,4 +76,4 @@ protected:
   const int PIXEL_THRESHOLD = 100; //minimum amount of pixels where the sensor returns true
 };
 } // namespace gazebo
-#endif
+#endif // GAZEBO_ROS_COLOR_SENSOR_HH

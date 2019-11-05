@@ -25,14 +25,15 @@ class image_converter:
             self.img_to_detect, cv2.COLOR_BGR2GRAY)
 
     def convert(self):
-
+        """Compares the images and publishes on a topic if the sign is found
+        """
         MIN_MATCH_COUNT = 50
-        img2 = self.cv_image
+        img_to_compare = self.cv_image
 
-        if (img2 is None):
+        if (img_to_compare is None):
             return
 
-        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        img_to_compare = cv2.cvtColor(img_to_compare, cv2.COLOR_BGR2GRAY)
 
         w, h = self.img_to_detect.shape
 
@@ -40,7 +41,7 @@ class image_converter:
             400, nOctaves=3, nOctaveLayers=4, extended=False, upright=True)
         # find the keypoints and descriptors with SURF
         kp1, des1 = surf.detectAndCompute(self.img_to_detect, None)
-        kp2, des2 = surf.detectAndCompute(img2, None)
+        kp2, des2 = surf.detectAndCompute(img_to_compare, None)
 
         FLANN_INDEX_KDTREE = 0
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
@@ -54,16 +55,16 @@ class image_converter:
             return
 
         # store all the good matches as per Lowe's ratio test.
-        good = []
+        good_matches = []
         for m, n in matches:
             if m.distance < 0.8 * n.distance:
-                good.append(m)
+                good_matches.append(m)
 
-        if len(good) > MIN_MATCH_COUNT:
+        if len(good_matches) > MIN_MATCH_COUNT:
             src_pts = np.uint8(
-                [kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+                [kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
             dst_pts = np.uint8(
-                [kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+                [kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 
             M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
             if M is None:
@@ -77,25 +78,14 @@ class image_converter:
                               [w - 1, 0]]).reshape(-1, 1, 2)
             dst = cv2.perspectiveTransform(pts, M)
             self.is_red_pub.publish(True)
-            img2 = cv2.polylines(
-                img2, [np.int32(dst)], True, 255, 3, cv2.LINE_AA).astype(np.uint8)
+            img_to_compare = cv2.polylines(
+                img_to_compare, [np.int32(dst)], True, 255, 3, cv2.LINE_AA).astype(np.uint8)
 
         else:
             rospy.loginfo("Not enough matches are found - %d/%d",
-                          len(good), MIN_MATCH_COUNT)
+                          len(good_matches), MIN_MATCH_COUNT)
             self.is_red_pub.publish(False)
             matchesMask = None
-
-        draw_params = dict(matchColor=(0, 255, 0),  # draw matches in green color
-                           singlePointColor=None,
-                           matchesMask=matchesMask,  # draw only inliers
-                           flags=2)
-
-        img3 = np.uint8(cv2.drawMatches(self.img_to_detect, kp1,
-                                        img2, kp2, good, None, **draw_params))
-
-        cv2.imshow("imagecomparison", img3)
-        cv2.waitKey(50)
 
     def callback(self, data):
 

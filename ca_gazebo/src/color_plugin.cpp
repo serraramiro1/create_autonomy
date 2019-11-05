@@ -29,7 +29,6 @@ GazeboRosColor::GazeboRosColor() : nh_("color_sensor_plugin"),
                                    GazeboRosCameraUtils()
 
 {
-
 }
 
 GazeboRosColor::~GazeboRosColor()
@@ -37,10 +36,11 @@ GazeboRosColor::~GazeboRosColor()
   ROS_DEBUG_STREAM_NAMED("camera", "Unloaded");
 }
 
-bool GazeboRosColor::IsColor(const my_color &target, const my_color &color)
+bool GazeboRosColor::IsColor(const my_color_type &target, const my_color_type &color)
 {
-  return (abs(color[0] - target[0]) <= COLOR_TOLERANCE and abs(color[1] - target[1]) <= 
-  COLOR_TOLERANCE && abs(color[2] - target[2]) <= COLOR_TOLERANCE);
+  return (abs(color[0] - target[0]) <= COLOR_TOLERANCE and
+          abs(color[1] - target[1]) <= COLOR_TOLERANCE and
+          abs(color[2] - target[2]) <= COLOR_TOLERANCE);
 }
 
 void GazeboRosColor::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
@@ -74,9 +74,9 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
                                 unsigned int _width, unsigned int _height, unsigned int _depth,
                                 const std::string &_format)
 {
- 
+
   const common::Time cur_time = this->world_->SimTime();
-  const my_color target_color = this->map_of_colors_.at(this->sensor_color_);
+  const my_color_type target_color = this->map_of_colors_.at(this->sensor_color_);
 
   if (cur_time.Double() - this->last_update_time_.Double() >= this->update_period_)
   {
@@ -84,23 +84,21 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
     unsigned char starting_pixel = 0;
     std_msgs::BoolPtr msg(new std_msgs::Bool);
     this->last_update_time_ = cur_time;
-    my_color rgb;
+    my_color_type rgb;
 
-    for (int row = 0; row < _width; row++)
+    for (int pixel = 0; pixel < _width * _height; pixel++)
     {
-      for (int col = 0; col < _height; col++)
+
+      rgb[0] = _image[starting_pixel];
+      rgb[1] = _image[starting_pixel + 1];
+      rgb[2] = _image[starting_pixel + 2];
+
+      if (this->IsColor(target_color, rgb))
       {
-        rgb[0] = _image[starting_pixel];
-        rgb[1] = _image[starting_pixel + 1];  
-        rgb[2] = _image[starting_pixel + 2];
-
-        if (this->IsColor(target_color, rgb))
-        {
-          count++;
-        }
-
-        starting_pixel += 3;
+        count++;
       }
+
+      starting_pixel += 3;
     }
     msg->data = count > PIXEL_THRESHOLD;
     sensor_publisher_.publish(msg);

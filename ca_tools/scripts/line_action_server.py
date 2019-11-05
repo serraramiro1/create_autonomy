@@ -17,7 +17,7 @@ class LineFollowerActionServer(object):
     IS_RED_TOPIC = "/isred"
     _feedback = ca_tools.msg.linefollowerFeedback()
     _result = ca_tools.msg.linefollowerResult()
-    LINEAR_VEL = 0.1  # linear vel
+    LINEAR_VEL = 0.1
     ANGULAR_VEL = 0.2
     VEL_PUB_TOPIC = "/create1/cmd_vel"
     RIGHT_SENSOR_SUB_TOPIC = "/color_sensor_plugin/right_color_sensor"
@@ -116,15 +116,14 @@ class LineFollowerActionServer(object):
     def _stop_moving(self):
         """Stops the robot
         """
-        for x in range(0, 8): # Just to make sure it stops
+        for x in range(0, 8):  # Just to make sure it stops
             aux = Twist()
             aux.linear.x = 0
             self._my_vel_pub.publish(aux)
 
-
     def execute_cb(self, goal):
         """Function to be called when a goal is recieved
-        
+
         Arguments:
             goal {[ca_tools.msg.linefollowerGoal]} -- [Goal message]
         """
@@ -155,16 +154,16 @@ class LineFollowerActionServer(object):
                 self._result.result = False
                 self._result.total_time = rospy.Time.now() - self._starting_time
                 self._as.set_preempted(self._result)
-                rospy.loginfo('%s: Preemted, because the mission lasted more than expected' % self._action_name)
+                rospy.loginfo(
+                    '%s: Preemted, because the mission lasted more than expected' % self._action_name)
                 success = False
                 break
-
 
             self._feedback.time_elapsed = rospy.Time.now()-self._starting_time
             self._feedback.distance_moved = self._accumulated_distance
             # publish the feedback
             self._as.publish_feedback(self._feedback)
-            r.sleep() # repeate every 1 sec
+            r.sleep()  # repeate every 1 sec
 
         if success:
 
@@ -172,10 +171,9 @@ class LineFollowerActionServer(object):
             rospy.loginfo('%s: Succeeded', self._action_name)
             self._result.result = True
             self._as.set_succeeded(self._result)
-        
+
         self._stop_moving()
         self._move_flag = False
-        
 
 
 if __name__ == '__main__':

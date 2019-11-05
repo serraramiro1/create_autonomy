@@ -86,7 +86,7 @@ void GazeboRosColor::OnNewFrame(const unsigned char *_image,
     this->last_update_time_ = cur_time;
     my_color_type rgb;
 
-    for (int pixel = 0; pixel < _width * _height; pixel++)
+    for (int pixel = 0; pixel < (_width * _height) - 1; pixel++)
     {
 
       rgb[0] = _image[starting_pixel];

@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""
-@file hough_lines.py
-@brief This program demonstrates line finding with the Hough transform
-"""
+
 import sys
 import math
 import cv2 as cv
@@ -25,7 +22,7 @@ class barrier_detector(object):
         self.image_sub = rospy.Subscriber(
             "/create1/raspicam/image_raw", Image, self.callback)
         self.cv_image = None
-        
+
     def process(self):
         count = 0
         # Loads an image
@@ -64,7 +61,7 @@ class barrier_detector(object):
         try:
             self.cv_image = self.bridge.imgmsg_to_cv2(data)
             w, h, _ = self.cv_image.shape
-            self.cv_image = self.cv_image[ h / 2:h, 0:w]
+            self.cv_image = self.cv_image[h / 2:h, 0:w]
 
         except CvBridgeError as e:
             print(e)

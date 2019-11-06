@@ -124,15 +124,11 @@ class LineFollowerActionServer(object):
     def _stop_moving(self):
         """Stops the robot
         """
-<<<<<<< HEAD
+
         for x in range(0, 8):  # Just to make sure it stops
             aux = Twist()
             aux.linear.x = 0
             self._my_vel_pub.publish(aux)
-=======
-        aux = Twist()
-        self._my_vel_pub.publish(aux)
->>>>>>> Spaces between operators
 
     def execute_cb(self, goal):
         """Function to be called when a goal is recieved
@@ -172,11 +168,7 @@ class LineFollowerActionServer(object):
                 success = False
                 break
 
-<<<<<<< HEAD
-            self._feedback.time_elapsed = rospy.Time.now()-self._starting_time
-=======
             self._feedback.time_elapsed = rospy.Time.now() - self._starting_time
->>>>>>> Spaces between operators
             self._feedback.distance_moved = self._accumulated_distance
             # publish the feedback
             self._as.publish_feedback(self._feedback)

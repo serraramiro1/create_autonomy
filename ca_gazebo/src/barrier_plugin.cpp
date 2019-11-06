@@ -11,7 +11,7 @@
 #define GOING_DOWN 1
 #define IS_UP 2
 #define IS_DOWN 3
-
+#define BARRIER_VEL 0.8
 namespace gazebo
 {
 class ModelPush : public ModelPlugin
@@ -42,7 +42,7 @@ public:
     switch (state)
     {
     case GOING_DOWN:
-      this->model->GetJoint("barrier_joint")->SetVelocity(0, -0.5);
+      this->model->GetJoint("barrier_joint")->SetVelocity(0, - BARRIER_VEL);
       if (position <= HORIZONTAL_POSITION)
       {
         state = IS_DOWN;
@@ -52,7 +52,7 @@ public:
       break;
 
     case GOING_UP:
-      this->model->GetJoint("barrier_joint")->SetVelocity(0, 0.5);
+      this->model->GetJoint("barrier_joint")->SetVelocity(0, BARRIER_VEL);
       if (position >= VERTICAL_POSITION)
       {
         state = IS_UP;

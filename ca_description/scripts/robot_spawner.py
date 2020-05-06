@@ -12,6 +12,7 @@ class RobotSpawner(object):
 
   SPAWN_URDF_TOPIC = '/gazebo/spawn_urdf_model'
   TIMEOUT_S = rospy.Duration(secs=10.0)
+  CHECK_RATE_HZ   = 5
 
   def __init__(self):
     rospy.init_node('robot_spawner')
@@ -44,6 +45,7 @@ class RobotSpawner(object):
       while RobotSpawner.TIMEOUT_S > (rospy.Time.now() - initial_time):
         if rospy.has_param(robot_description_param) and rospy.has_param(pose_param):
           break
+        rospy.sleep(1/RobotSpawner.CHECK_RATE_HZ)
 
       msg.model_xml = rospy.get_param(robot_description_param)
 

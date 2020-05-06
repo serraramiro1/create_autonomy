@@ -11,14 +11,15 @@ from tf.transformations import quaternion_from_euler
 class RobotSpawner(object):
 
   SPAWN_URDF_TOPIC = '/gazebo/spawn_urdf_model'
+  TIMEOUT_S = rospy.Duration(secs=10.0)
 
   def __init__(self):
     rospy.init_node('robot_spawner')
-    self.ns = rospy.get_namespace()
+    ns = rospy.get_namespace()
 
     # Get robot index
     try:
-      index = re.findall('[0-9]+', self.ns)[0]
+      index = re.findall('[0-9]+', ns)[0]
     except IndexError:
       index = 0
     i = index
@@ -36,21 +37,28 @@ class RobotSpawner(object):
 
       # Robot information from robot_description
       robot_description_param = "/create{}/robot_description".format(i)
-      if rospy.has_param(robot_description_param):
-        msg.model_xml = rospy.get_param(robot_description_param)
 
-      msg.robot_namespace = self.ns
+      # Wait for params
+      pose_param = "{}/amcl".format(ns)
+      initial_time = rospy.Time.now()
+      while RobotSpawner.TIMEOUT_S > (rospy.Time.now() - initial_time):
+        if rospy.has_param(robot_description_param) and rospy.has_param(pose_param):
+          break
+
+      msg.model_xml = rospy.get_param(robot_description_param)
+
+      msg.robot_namespace = ns
 
       # Using pose from parameter server
       msg.initial_pose = Pose()
       msg.initial_pose.position.x = rospy.get_param(
-            "{}/amcl/initial_pose_x".format(self.ns), randint(-10, 10))
+            "{}/initial_pose_x".format(pose_param), randint(-10, 10))
       msg.initial_pose.position.y = rospy.get_param(
-            "{}/amcl/initial_pose_y".format(self.ns), randint(-10, 10))
+            "{}/initial_pose_y".format(pose_param), randint(-10, 10))
       msg.initial_pose.position.z = rospy.get_param(
-            "{}/amcl/initial_pose_z".format(self.ns), 0.)
+            "{}/initial_pose_z".format(pose_param), 0.)
       yaw = rospy.get_param(
-            "{}/amcl/initial_pose_a".format(self.ns), 0.)
+            "{}/initial_pose_a".format(pose_param), 0.)
       q = quaternion_from_euler(0, 0, yaw)
       msg.initial_pose.orientation = Quaternion(q[0], q[1], q[2], q[3])
 

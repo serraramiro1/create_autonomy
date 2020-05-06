@@ -10,8 +10,7 @@
     <node name="cartographer_node" pkg="cartographer_ros"
         type="cartographer_node" args="
             -configuration_directory $(find ca_cartographer)/config
-            -configuration_basename mapping_2d.lua"
-        output="screen">
+            -configuration_basename mapping_2d.lua">
       <!-- ID needs to be set through environment variable to allow lua script to read it -->
       <env name="ID" value="$(arg robot_id)" />
       <remap from="scan" to="$(arg ns)/$(arg laser)/scan" />

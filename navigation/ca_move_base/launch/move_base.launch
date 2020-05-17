@@ -6,7 +6,7 @@
   <arg name="laser" value="$(optenv LASER rplidar)" doc="Laser for mapping the environment"/>
 
   <arg name="global_planner" value="$(optenv GLOBAL_PLANNER navfn)"/>
-  <arg name="local_planner"  value="$(optenv LOCAL_PLANNER dwa)"/>
+  <arg name="local_planner"  value="$(optenv LOCAL_PLANNER teb)"/>
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find ca_move_base)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />

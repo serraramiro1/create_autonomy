@@ -40,6 +40,7 @@ ros-*-rqt-common-plugins
 ros-*-rqt-robot-plugins
 ros-*-slam-gmapping
 ros-*-smach-viewer
+ros-*-teb-local-planner
 ros-*-transmission-interface
 ros-*-xacro
 ros-*-yocs-controllers

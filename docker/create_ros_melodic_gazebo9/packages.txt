@@ -38,6 +38,7 @@ ros-*-rplidar-ros
 ros-*-rqt
 ros-*-rqt-common-plugins
 ros-*-rqt-robot-plugins
+ros-*-sbpl-lattice-planner
 ros-*-slam-gmapping
 ros-*-smach-viewer
 ros-*-teb-local-planner

@@ -16,7 +16,6 @@
     <rosparam file="$(find ca_move_base)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find ca_move_base)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find ca_move_base)/config/$(arg local_planner)_local_planner_params.yaml" command="load" />
-
     <rosparam file="$(find ca_move_base)/config/move_base_params.yaml" command="load" />
 
     <!-- We want a single map for multi-robots -->
@@ -40,6 +39,7 @@
     <param name="global_costmap/obstacle_layer/scan/sensor_frame" value="$(arg tf_prefix)/$(arg laser)_link"/>
     <param name="global_costmap/obstacle_layer/scan/topic" value="/$(arg ns)/$(arg laser)/scan"/>
 
+    <param name="SBPLLatticePlanner/primitive_filename" value="$(find ca_move_base)/config/matlab/turtle.mprim" />
     <param name="DWAPlannerROS/global_frame_id"  value="$(arg tf_prefix)/odom"/>
   </node>
 
